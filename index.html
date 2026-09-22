@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estatais dos Estados</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+        <header class="cabecalho">
+            <p class="sobretitulo">Estatais dos Estados</p>
+            <h1>Um mapa de empresas públicas</h1>
+            <p class="instrucao">Cada círculo representa uma estatal. O tamanho indica o número de empregados.</p>
+            <label class="controle" for="variavel">
+                <span>Agrupar por</span>
+                <select id="variavel" aria-label="Variável usada para agrupar as bolhas"></select>
+            </label>
+            <label class="controle" for="variavel-raio">
+                <span>Tamanho por</span>
+                <select id="variavel-raio" aria-label="Variável usada para determinar o tamanho das bolhas"></select>
+            </label>
+        </header>
+        <svg class="grafico" role="img" aria-label="Bolhas representando as estatais dos estados"></svg>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="script.js"></script>
+</body>
+</html>
