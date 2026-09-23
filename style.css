@@ -1,0 +1,27 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+
+    --accent: firebrick;
+
+}
+
+h1 {
+
+    font-size: 3em;
+    margin-bottom: 0;
+
+}
+
+p.subtitle {
+
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-weight: bold;
+    color: var(--accent);
+    margin-top: 0;
+    font-family: sans-serif;
+
+}
