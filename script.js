@@ -182,6 +182,7 @@ seletor_grafico_barras.addEventListener("change", e => {
     const modo = e.target.value;
 
     grafico_barras.atualiza_grafico(modo);
+    grafico_barras.mostra_rotulos(modo);
 
 })
 
@@ -295,14 +296,15 @@ class GraficoBarras {
     mostra_rotulos(modo) {
 
         const key = modo == "setor" ? "setores" : "ufs";
+        const variavel = modo == "setor" ? "Setor" : "UF";
 
         this.rotulos = this.container.selectAll("span.rotulo")
-            .data(this[key])
+            .data(this.categorias[modo])
             .join("span")
             .classed("rotulo", true)
             .style("left", this.x(1) + "px")
-            .style("top", d => (this["y_" + modo](d)) + "px")
-            .text(d => d)
+            .style("top", d => (this["y_" + modo](d[variavel])) + "px")
+            .text(d => d[variavel] + ": " + d["n_" + modo])
         ;
     }
 

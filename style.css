@@ -78,7 +78,7 @@ h2 {
 }
 
 .container-grafico-barras {
-    height: 600px;
+    height: 800px;
 }
 
 .mapa,
@@ -102,7 +102,7 @@ path.uf:hover, path.uf.ativo {
 
 /* grafico barras*/
 .grafico-barras {
-    border: 1px solid pink;
+
 }
 
 [data-tipo-dep="DEPENDENTE"] {
