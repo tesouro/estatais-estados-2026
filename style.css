@@ -123,6 +123,16 @@ path.uf:hover, path.uf.ativo {
 
 }
 
+.container-grafico-barras {
+    position: relative;
+}
+
+.container-grafico-barras span.rotulo {
+    position: absolute;
+    transform: translateY(-100%);
+    font-size: .7em;
+}
+
 /*BOx */
 
 .container-visao-estado {

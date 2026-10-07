@@ -22,7 +22,7 @@ fetch("dados.json").then(response => response.json()).then(data => {
     };
 
     mapa = new Mapa(".mapa", geojson);
-    grafico_barras = new GraficoBarras(".grafico-barras", dados);
+    grafico_barras = new GraficoBarras("grafico-barras", dados, data.categorias);
 
 
 
@@ -189,10 +189,14 @@ seletor_grafico_barras.addEventListener("change", e => {
 
 class GraficoBarras {
 
-    constructor(ref, dados) {
+    constructor(ref, dados, categorias) {
 
         this.dados = dados;
-        this.svg = d3.select(ref);
+        this.svg = d3.select("." + ref);
+        this.container = d3.select(".container-" + ref);
+
+        this.categorias = categorias
+
 
         this.w = +this.svg.style("width").slice(0,-2);
         this.h = +this.svg.style("height").slice(0,-2);
@@ -208,6 +212,8 @@ class GraficoBarras {
         this.prepara_escalas();
 
         this.renderiza_grafico();
+
+        this.mostra_rotulos("setor");
 
     }
 
@@ -284,9 +290,20 @@ class GraficoBarras {
             .attr("y", d => this["y_"+modo](d[variavel]))
         ;
 
+    }
 
+    mostra_rotulos(modo) {
 
+        const key = modo == "setor" ? "setores" : "ufs";
 
+        this.rotulos = this.container.selectAll("span.rotulo")
+            .data(this[key])
+            .join("span")
+            .classed("rotulo", true)
+            .style("left", this.x(1) + "px")
+            .style("top", d => (this["y_" + modo](d)) + "px")
+            .text(d => d)
+        ;
     }
 
 }
