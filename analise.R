@@ -21,11 +21,11 @@ data_com_posicoes <- raw_data %>%
   left_join(ranking_uf) %>%
   left_join(ranking_setores) %>%
   arrange(desc(n_uf), Dependência) %>%
-  group_by(UF, Dependência) %>%
+  group_by(UF) %>%
   mutate(pos_uf = row_number()) %>%
   ungroup() %>%
   arrange(desc(n_setor), Dependência) %>%
-  group_by(Setor, Dependência) %>%
+  group_by(Setor) %>%
   mutate(pos_setor = row_number())
 
 ggplot(data_com_posicoes) + geom_rect(aes(y = UF, x = pos_uf, fill = Dependência), width = 0.8, height = 0.8)
