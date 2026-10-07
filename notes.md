@@ -1,3 +1,8 @@
+## 2.
+
+O gráfico de barras não pode começar com display: none, senão não dá para calcular as dimensões do elemento svg!
+
+## 1.
 
 Para futura referência quando os <path>s parecem ficar gigantesco:
 
