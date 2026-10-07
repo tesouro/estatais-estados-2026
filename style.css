@@ -77,6 +77,10 @@ h2 {
     margin: 0 auto;
 }
 
+.container-grafico-barras {
+    height: 600px;
+}
+
 .mapa,
 .grafico-barras {
     width: 100%;
@@ -103,10 +107,12 @@ path.uf:hover, path.uf.ativo {
 
 [data-tipo-dep="DEPENDENTE"] {
     fill: var(--cor-dep);
+    stroke: var(--cor-dep);
 }
 
 [data-tipo-dep="NÃO DEPENDENTE"] {
     fill: var(--cor-nao-dep);
+    stroke: var(--cor-nao-dep);
 }
 
 /*BOx */

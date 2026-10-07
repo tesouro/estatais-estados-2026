@@ -183,8 +183,8 @@ class GraficoBarras {
         this.dados = dados;
         this.svg = d3.select(ref);
 
-        this.w = Number.parseFloat(this.svg.style("width")) || 600;
-        this.h = Number.parseFloat(this.svg.style("height")) || 400;
+        this.w = +this.svg.style("width").slice(0,-2);
+        this.h = +this.svg.style("height").slice(0,-2);
 
         this.margin = 10;
 
@@ -224,24 +224,31 @@ class GraficoBarras {
         const maximo = Math.max(max_numero_empresas_setor, max_numero_empresas_uf);
 
         const largura_maxima_grafico = this.w - (2*this.margin); 
-        this.largura_bloquinho = Math.floor(largura_maxima_grafico / maximo);
+        this.largura_bloquinho = //Math.floor(
+            largura_maxima_grafico / maximo;//);
 
         console.log(this.h, this.margin);
 
         this.x = d3.scaleLinear().domain([0,maximo]).range([this.margin, this.w-this.margin]);
         this.y_setor = d3.scaleBand()
             .domain(this.setores)
-            .range([this.margin, this.h - this.margin])
-            .padding(0.1);
+            .rangeRound([this.margin, this.h - this.margin])
+            .padding(0.5);
 
-        this.altura_barra = Math.floor(this.y_setor.bandwidth());
+        this.y_uf = d3.scaleBand()
+            .domain(this.ufs)
+            .rangeRound([this.margin, this.h - this.margin])
+            .padding(0.5);
+        ;
+
+        this.altura_barra = Math.floor(this.y_uf.bandwidth());
         
         
     }
 
     renderiza_grafico() {
 
-        this.svg.selectAll("rect.empresas")
+        this.chart = this.svg.selectAll("rect.empresas")
             .data(this.dados)
             .join("rect")
             .classed("empresas", true)
@@ -251,6 +258,22 @@ class GraficoBarras {
             .attr("x", d => this.x(d.pos_setor))
             .attr("y", d => this.y_setor(d.Setor))
         ;
+
+    }
+
+    atualiza_grafico(modo){
+
+        const variavel = modo == "setor" ? "Setor" : "UF";
+
+        this.chart
+            .transition()
+            .duration(500)
+            .attr("x", d => this.x(d["pos_" + modo]))
+            .attr("y", d => this["y_"+modo](d[variavel]))
+        ;
+
+
+
 
     }
 
