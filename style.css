@@ -6,6 +6,8 @@
     font-family: 'Rawline', serif;
     --azul-portal: #345d96;
     --text: #333;
+    --cor-nao-dep: #718c35;
+    --cor-dep: #f2ac29;
 }
 
 body {
@@ -32,8 +34,8 @@ h2 {
 }
 
 .container-mapa {
-    width: 600px;
-    height: 600px;
+    width: 500px;
+    height: 500px;
     margin: 0 auto;
 }
 
@@ -49,8 +51,73 @@ h2 {
     stroke-width: 1;
 }
 
-path.uf:hover {
-    fill: goldenrod;
+path.uf:hover, path.uf.ativo {
+    fill: khaki;
     stroke: var(--azul-portal);
     stroke-width: 5;
+}
+
+/*BOx */
+
+.container-visao-estado {
+    margin: 1rem auto;
+    max-width: 800px;
+    opacity: 0;
+    transition: opacity .2s;
+
+}
+
+.container-visao-estado.visivel {
+    opacity: 1;
+}
+
+[data-info-box-estado] {
+    font-weight: bold;
+}
+
+[data-info-box-estado="quantidade-dep"] { color: var(--cor-dep) ;}
+[data-info-box-estado="quantidade-nao-dep"] { color: var(--cor-nao-dep) ;}
+
+.linha-quantidade {
+    line-height: 2;
+}
+
+.dependente {
+    background-color: var(--cor-dep);
+    color: white;
+    padding: 0.2em 0.4em;
+    border-radius: 2px;
+}
+
+.nao-dependente {
+    background-color: var(--cor-nao-dep);
+    color: white;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+}
+
+.box-nome-estado {
+    margin-top: 0;
+    border-top: 2px solid var(--azul-portal);
+}
+
+.box-titulo-setor {
+    margin-bottom: 0.2em;
+    font-size: .8em;
+    font-weight: 500;
+}
+
+.marcador-dependente { --color: var(--cor-dep);}
+.marcador-nao-dependente { --color: var(--cor-nao-dep);}
+
+.box-marcador-empresa {
+    width: .8em; 
+    height: .8em;
+    background-color: var(--color);
+    display: inline-block;
+    border-radius: 50%;
+}
+
+.box-marcador-empresa + .box-marcador-empresa {
+    margin-left: .2em;
 }
