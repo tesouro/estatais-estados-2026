@@ -115,6 +115,14 @@ path.uf:hover, path.uf.ativo {
     stroke: var(--cor-nao-dep);
 }
 
+.titulo-grafico-barras select {
+    font-size: inherit;
+    font-weight: inherit;
+    border-color: currentColor;
+    border-radius: 0 5px 5px 5px;
+
+}
+
 /*BOx */
 
 .container-visao-estado {

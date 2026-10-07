@@ -154,6 +154,7 @@ class Mapa {
 
 const controle_aba = document.querySelector("[data-aba-visivel]");
 const barra_controle = document.querySelector(".barra-controle");
+const seletor_grafico_barras = document.querySelector('.titulo-grafico-barras select');
 
 function reseta_botoes() {
 
@@ -174,7 +175,17 @@ barra_controle.addEventListener("click", e => {
 
     }
 
+});
+
+seletor_grafico_barras.addEventListener("change", e => {
+
+    const modo = e.target.value;
+
+    grafico_barras.atualiza_grafico(modo);
+
 })
+
+
 
 class GraficoBarras {
 
