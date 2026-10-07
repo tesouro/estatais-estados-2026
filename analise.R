@@ -56,6 +56,14 @@ output <- list(
 jsonlite::write_json(output, "dados.json")
 
 
+contagem <- data_com_posicoes %>%
+  count(UF, Setor)
+
+ggplot(contagem) + geom_raster(aes(x = UF, y = Setor, fill = n)) + 
+  geom_text(aes(x = UF, y = Setor, label = n), color = "gray") +
+  colorspace::scale_fill_continuous_sequential(palette = "BurgYl") +
+  theme_bw()
+
 # jsonlite::write_json(raw_data, "data.json")
 # 
 # glimpse(raw_data)
