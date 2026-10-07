@@ -1,0 +1,56 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    font-family: 'Rawline', serif;
+    --azul-portal: #345d96;
+    --text: #333;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--azul-portal);
+    padding: 1em;
+}
+
+header h1 {
+    max-width: 400px;
+    color: white;
+    text-transform: uppercase;
+}
+
+h2 {
+    text-align: center;
+}
+
+.container-mapa {
+    width: 600px;
+    height: 600px;
+    margin: 0 auto;
+}
+
+.mapa {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.mapa path.uf {
+    stroke: #333333;
+    fill: transparent;
+    stroke-width: 1;
+}
+
+path.uf:hover {
+    fill: goldenrod;
+    stroke: var(--azul-portal);
+    stroke-width: 5;
+}
