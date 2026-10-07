@@ -9,12 +9,12 @@ raw_data <- readxl::read_excel("quadro_estatais_2026.xlsx", sheet = "Dados 2025"
 
 ranking_uf <- raw_data %>%
   count(UF) %>%
-  arrange(n) %>%
+  arrange(desc(n)) %>%
   rename(n_uf = n)
 
 ranking_setores <- raw_data %>%
   count(Setor) %>%
-  arrange(n) %>%
+  arrange(desc(n)) %>%
   rename(n_setor = n)
 
 data_com_posicoes <- raw_data %>%
@@ -46,7 +46,11 @@ mapa_ufs_simp_digitos <- mapa_ufs_simp %>%
 
 output <- list(
   mapa = mapa_ufs_simp_digitos,
-  dados = data_com_posicoes
+  dados = data_com_posicoes,
+  categorias = list(
+    setor = ranking_setores,
+    uf = ranking_uf
+  )
 )
 
 jsonlite::write_json(output, "dados.json")

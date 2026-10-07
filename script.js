@@ -3,6 +3,7 @@ const container_mapa = document.querySelector(".container-mapa");
 //const mapa = d3.select(".mapa");
 
 let mapa;
+let grafico_barras;
 let dados;
 
 fetch("dados.json").then(response => response.json()).then(data => {
@@ -20,7 +21,10 @@ fetch("dados.json").then(response => response.json()).then(data => {
         }))
     };
 
-    mapa = new Map(".mapa", geojson);
+    mapa = new Mapa(".mapa", geojson);
+    grafico_barras = new GraficoBarras(".grafico-barras", dados);
+
+
 
 
 
@@ -28,7 +32,7 @@ fetch("dados.json").then(response => response.json()).then(data => {
 
 console.log("oxe");
 
-class Map {
+class Mapa {
 
     constructor(ref, data) {
 
@@ -148,7 +152,7 @@ class Map {
 
 // BOTOES
 
-const controle_aba = document.querySelector("[data-aba-visivel");
+const controle_aba = document.querySelector("[data-aba-visivel]");
 const barra_controle = document.querySelector(".barra-controle");
 
 function reseta_botoes() {
@@ -171,4 +175,84 @@ barra_controle.addEventListener("click", e => {
     }
 
 })
+
+class GraficoBarras {
+
+    constructor(ref, dados) {
+
+        this.dados = dados;
+        this.svg = d3.select(ref);
+
+        this.w = Number.parseFloat(this.svg.style("width")) || 600;
+        this.h = Number.parseFloat(this.svg.style("height")) || 400;
+
+        this.margin = 10;
+
+        this.svg.attr("viewBox", `0 0 ${this.w} ${this.h}`);
+        this.svg.attr("width", this.w);
+        this.svg.attr("height", this.h);
+
+        this.prepara_listas_categorias();
+
+        this.prepara_escalas();
+
+        this.renderiza_grafico();
+
+    }
+
+    prepara_listas_categorias() {
+
+        this.setores = this.dados
+            .map(d => d.Setor)
+            .filter( (d,i,a) => a.indexOf(d) == i)
+        ;
+
+        this.ufs = this.dados
+            .map(d => d.UF)
+            .filter( (d,i,a) => a.indexOf(d) == i)
+        ;
+
+        console.log(this.setores, this.ufs);
+
+    }
+
+    prepara_escalas(){
+
+        const max_numero_empresas_uf = d3.max(this.dados, d => d.n_uf);
+        const max_numero_empresas_setor = d3.max(this.dados, d => d.n_setor);
+        
+        const maximo = Math.max(max_numero_empresas_setor, max_numero_empresas_uf);
+
+        const largura_maxima_grafico = this.w - (2*this.margin); 
+        this.largura_bloquinho = Math.floor(largura_maxima_grafico / maximo);
+
+        console.log(this.h, this.margin);
+
+        this.x = d3.scaleLinear().domain([0,maximo]).range([this.margin, this.w-this.margin]);
+        this.y_setor = d3.scaleBand()
+            .domain(this.setores)
+            .range([this.margin, this.h - this.margin])
+            .padding(0.1);
+
+        this.altura_barra = Math.floor(this.y_setor.bandwidth());
+        
+        
+    }
+
+    renderiza_grafico() {
+
+        this.svg.selectAll("rect.empresas")
+            .data(this.dados)
+            .join("rect")
+            .classed("empresas", true)
+            .attr("data-tipo-dep", d => d["Dependência"])
+            .attr("width", this.largura_bloquinho)
+            .attr("height", this.altura_barra)
+            .attr("x", d => this.x(d.pos_setor))
+            .attr("y", d => this.y_setor(d.Setor))
+        ;
+
+    }
+
+}
 

@@ -70,13 +70,15 @@ h2 {
     text-align: center;
 }
 
-.container-mapa {
+.container-mapa,
+.container-grafico-barras {
     width: 500px;
     height: 500px;
     margin: 0 auto;
 }
 
-.mapa {
+.mapa,
+.grafico-barras {
     width: 100%;
     height: 100%;
     display: block;
@@ -92,6 +94,19 @@ path.uf:hover, path.uf.ativo {
     fill: khaki;
     stroke: var(--azul-portal);
     stroke-width: 5;
+}
+
+/* grafico barras*/
+.grafico-barras {
+    border: 1px solid pink;
+}
+
+[data-tipo-dep="DEPENDENTE"] {
+    fill: var(--cor-dep);
+}
+
+[data-tipo-dep="NÃO DEPENDENTE"] {
+    fill: var(--cor-nao-dep);
 }
 
 /*BOx */
