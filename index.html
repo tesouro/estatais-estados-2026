@@ -17,29 +17,51 @@
 
     </header>
 
-    <main>
+    <main data-aba-visivel="mapa">
 
-        <h2>Escolha um estado no mapa!</h2>
+        <ul class="barra-controle">
+            <li><button data-modo="mapa" class="ativo">Explore as Empresas por Estado</button></li>
+            <li><button data-modo="consolidado">Visão consolidada</button></li>
+        </ul>
 
-        <div class="container-mapa">
 
-            <svg class="mapa"></svg>
+        <div class="wrapper-visao-mapa">
 
-        </div>
+            <h2>Escolha um estado no mapa!</h2>
 
-        <div class="container-visao-estado">
+            <div class="container-mapa">
 
-            <h3 class="box-nome-estado"></h3>
+                <svg class="mapa"></svg>
 
-            <p class="linha-quantidade">O estado possui <span data-info-box-estado="quantidade"></span> empresas, das quais <span data-info-box-estado="quantidade-dep"></span> são <span class="dependente">dependentes</span> e <span data-info-box-estado="quantidade-nao-dep"></span> são <span class="nao-dependente"> não-dependentes</span></p>
+            </div>
 
-            <div class="box-setores">
+            <div class="container-visao-estado">
+
+                <h3 class="box-nome-estado"></h3>
+
+                <p class="linha-quantidade">O estado possui <span data-info-box-estado="quantidade"></span> empresas, das quais <span data-info-box-estado="quantidade-dep"></span> são <span class="dependente">dependentes</span> e <span data-info-box-estado="quantidade-nao-dep"></span> são <span class="nao-dependente"> não-dependentes</span></p>
+
+                <div class="box-setores">
+
+                </div>
 
             </div>
 
         </div>
 
+        <div class="wrapper-visao-consolidada">
 
+            <h2>Total de empresas por <select name="seletor-modo-grafico-barra" id="">
+                <option value="setor">Setor</option>
+                <option value="uf">UF</option>
+            </select></h2>
+
+            <div class="container-grafico-barras">
+
+                <svg class="grafico-barras"></svg>
+
+            </div>
+        </div>
 
     </main>
 

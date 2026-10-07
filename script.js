@@ -143,8 +143,32 @@ class Map {
 
         })
 
-
     }
 }
 
+// BOTOES
+
+const controle_aba = document.querySelector("[data-aba-visivel");
+const barra_controle = document.querySelector(".barra-controle");
+
+function reseta_botoes() {
+
+    barra_controle.querySelectorAll("button").forEach(btn => btn.classList.remove("ativo"));
+
+}
+barra_controle.addEventListener("click", e => {
+
+    if (e.target.tagName == "BUTTON") {
+
+        const modo = e.target.dataset.modo;
+        
+        reseta_botoes();
+
+        e.target.classList.add("ativo");
+
+        controle_aba.dataset.abaVisivel = modo;
+
+    }
+
+})
 

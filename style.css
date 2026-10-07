@@ -29,6 +29,43 @@ header h1 {
     text-transform: uppercase;
 }
 
+/* BARRA DE CONTROLE */
+
+ul.barra-controle {
+    margin: 1rem 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+ul.barra-controle li {
+    list-style: none;
+    flex: 1 1 50%;
+    border: 2px solid var(--azul-portal);
+}
+
+button[data-modo] {
+    margin: 0;
+    padding: 1em 2em;
+    background-color: white;
+    border: none;
+    text-align: center;
+    width: 100%;
+    font-size: 1rem;
+}
+
+button[data-modo].ativo {
+    border-color: white;
+    background-color: var(--azul-portal);
+    color: white;
+}
+
+/* CONTAINERS ABAS */
+
+[data-aba-visivel="mapa"] .wrapper-visao-consolidada { display: none; }
+[data-aba-visivel="consolidado"] .wrapper-visao-mapa { display: none; }
+
+
 h2 {
     text-align: center;
 }
