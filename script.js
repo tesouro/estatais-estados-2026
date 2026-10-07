@@ -24,6 +24,8 @@ fetch("dados.json").then(response => response.json()).then(data => {
     mapa = new Mapa(".mapa", geojson);
     grafico_barras = new GraficoBarras("grafico-barras", dados, data.categorias);
 
+    controle_aba.dataset.abaVisivel = "mapa";
+
 
 
 
@@ -305,6 +307,11 @@ class GraficoBarras {
             .style("left", this.x(1) + "px")
             .style("top", d => (this["y_" + modo](d[variavel])) + "px")
             .text(d => d[variavel] + ": " + d["n_" + modo])
+            .style("opacity", 0)
+            .transition()
+            .duration(1000)
+            .delay( (d,i) => i * 50)
+            .style("opacity", 1)
         ;
     }
 

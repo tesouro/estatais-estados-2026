@@ -65,6 +65,11 @@ button[data-modo].ativo {
 [data-aba-visivel="mapa"] .wrapper-visao-consolidada { display: none; }
 [data-aba-visivel="consolidado"] .wrapper-visao-mapa { display: none; }
 
+.wrapper-visao-consolidada {
+    margin: 2rem;
+    border: 1px solid #333;
+    border-radius: 10px;
+}
 
 h2 {
     text-align: center;
