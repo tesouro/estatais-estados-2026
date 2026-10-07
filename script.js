@@ -267,7 +267,8 @@ class GraficoBarras {
 
         this.chart
             .transition()
-            .duration(500)
+            .duration(1000)
+            .delay((d,i) => i * 1)
             .attr("x", d => this.x(d["pos_" + modo]))
             .attr("y", d => this["y_"+modo](d[variavel]))
         ;
