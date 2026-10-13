@@ -16,17 +16,19 @@ body {
 }
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--azul-portal);
-    padding: 1em;
+    margin: 1rem 0 40px 40px;
+}
+
+header > img {
+    display: block;
+    height: 40px;
 }
 
 header h1 {
-    max-width: 400px;
-    color: white;
-    text-transform: uppercase;
+    color: var(--azul-portal);
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: normal;
 }
 
 /* BARRA DE CONTROLE */
