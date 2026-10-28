@@ -32,8 +32,6 @@ fetch("dados.json").then(response => response.json()).then(data => {
 
 })
 
-console.log("oxe");
-
 class Mapa {
 
     constructor(ref, data) {
@@ -123,24 +121,28 @@ class Mapa {
             subtitulo.textContent = setor;
             subtitulo.classList.add("box-titulo-setor");
 
-            const container_lista_empresas_setor = document.createElement("div");
+            const container_lista_empresas_setor = document.createElement("ul");
             container_lista_empresas_setor.classList.add("box-container-empresas-setor");
 
             const empresas = mini_data.filter(d => d.Setor == setor);
 
+            console.log(empresas);
+
             empresas.forEach(empresa => {
 
-                const marcador_empresa = document.createElement("span");
-                marcador_empresa.classList.add("box-marcador-empresa");
-                marcador_empresa.dataset.idEmpresa = empresa.CNPJ;
+                const el_nome_empresa = document.createElement("li");
+                el_nome_empresa.classList.add("empresa-do-setor");
+                el_nome_empresa.dataset.idEmpresa = empresa.CNPJ;
+                el_nome_empresa.innerHTML = empresa.Estatal;
                 
+                /*
                 if (empresa["Dependência"] == "DEPENDENTE") {
                     marcador_empresa.classList.add("marcador-dependente");
                 } else {
                     marcador_empresa.classList.add("marcador-nao-dependente");
-                }   
+                } */
                 
-                container_lista_empresas_setor.append(marcador_empresa);
+                container_lista_empresas_setor.append(el_nome_empresa);
 
             })
 
@@ -157,12 +159,22 @@ class Mapa {
 const controle_aba = document.querySelector("[data-aba-visivel]");
 const barra_controle = document.querySelector(".barra-controle");
 const seletor_grafico_barras = document.querySelector('.titulo-grafico-barras select');
+const box_setores = document.querySelector(".box-setores");
 
 function reseta_botoes() {
 
     barra_controle.querySelectorAll("button").forEach(btn => btn.classList.remove("ativo"));
 
 }
+
+function reseta_lista_empresas() {
+
+    document.querySelectorAll("li.empresa-do-setor").forEach(li => {
+        li.classList.remove("selected");
+    })
+
+}
+
 barra_controle.addEventListener("click", e => {
 
     if (e.target.tagName == "BUTTON") {
@@ -188,6 +200,46 @@ seletor_grafico_barras.addEventListener("change", e => {
 
 })
 
+box_setores.addEventListener("click", e => {
+
+    const el = e.target;
+
+    if (el.tagName == "LI") {
+
+        reseta_lista_empresas();
+        el.classList.add("selected");
+        mostra_card_empresa(el.dataset.idEmpresa);
+
+    }
+
+})
+
+function mostra_card_empresa(id) {
+
+    const dados_empresa = dados.find(d => d.CNPJ == id);
+    console.log(dados_empresa);
+
+    popula_informacoes_empresa(dados_empresa);
+
+
+
+}
+
+function popula_informacoes_empresa(dados_empresa) {
+
+    const campos = document.querySelectorAll("[data-card-empresa]");
+
+    campos.forEach(campo => {
+
+        const key = campo.dataset.cardEmpresa;
+        campo.innerHTML = dados_empresa[key];
+
+    })
+
+    document.querySelector(".link-carta").href = dados_empresa["Link Carta Anual"];
+
+
+}
 
 
 class GraficoBarras {

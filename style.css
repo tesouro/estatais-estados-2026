@@ -12,7 +12,7 @@
 
 body {
     padding: 0;
-    margin: 0;
+    margin: .5rem;
 }
 
 header {
@@ -140,11 +140,11 @@ path.uf:hover, path.uf.ativo {
     font-size: .7em;
 }
 
-/*BOx */
+/*BOX LISTA EMPRESAS */
 
 .container-visao-estado {
     margin: 1rem auto;
-    max-width: 800px;
+    max-width: 1200px;
     opacity: 0;
     transition: opacity .2s;
 
@@ -185,14 +185,15 @@ path.uf:hover, path.uf.ativo {
 }
 
 .box-titulo-setor {
-    margin-bottom: 0.2em;
-    font-size: .8em;
+    margin-bottom: 0.25em;
+    font-size: 1rem;
     font-weight: 500;
 }
 
+/*
 .marcador-dependente { --color: var(--cor-dep);}
 .marcador-nao-dependente { --color: var(--cor-nao-dep);}
-
+*/
 .box-marcador-empresa {
     width: .8em; 
     height: .8em;
@@ -200,7 +201,84 @@ path.uf:hover, path.uf.ativo {
     display: inline-block;
     border-radius: 50%;
 }
-
+/*
 .box-marcador-empresa + .box-marcador-empresa {
     margin-left: .2em;
+}
+*/
+
+ul.box-container-empresas-setor {
+    list-style: none;
+    padding: 0;
+    font-size: .8rem;
+    margin: 0;
+    color: var(--azul-portal);
+}
+
+ul.box-container-empresas-setor li.empresa-do-setor.selected {
+
+    font-weight: bold;
+    border-bottom: 2px solid currentColor;
+
+}
+
+ul.box-container-empresas-setor li.empresa-do-setor {
+
+    padding: .3em .5em;
+}
+
+ul.box-container-empresas-setor li.empresa-do-setor:hover {
+    background-color: var(--azul-portal);
+    color: white;
+}
+
+#card-empresa {
+
+    margin: 1rem;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: .5rem;
+    box-shadow: 0 0 5px #333;
+
+}
+
+.mosaico-info-empresa {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.wrapper-info-card-empresa {
+    width: 200px;
+
+    padding: 10px;
+}
+
+.nome-campo {
+    margin: 0;
+    letter-spacing: .2em;
+    font-size: .6em;
+    font-weight: bold;
+    color: #345d96;
+    text-transform: uppercase;
+}
+
+p[data-card-empresa] {
+    margin-top: .5em;
+    font-weight: bold;
+}
+
+.wrapper-link-carta {
+    margin: 0;
+    font-size: .8em;
+    text-transform: uppercase;
+    margin-left: 10px;
+}
+
+h4[data-card-empresa="Estatal"] {
+    font-size: 1.2rem;
+    color: var(--azul-portal);
+    margin-bottom: 0;
+    margin-left: 10px;
 }
