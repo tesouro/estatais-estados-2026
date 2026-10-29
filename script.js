@@ -214,15 +214,54 @@ box_setores.addEventListener("click", e => {
 
 })
 
+const modal = document.querySelector("#card-empresa");
+const sombra = document.querySelector("#sombra-card-empresa");
+const btn_fechar_card = document.querySelector("button.fechar-card");
+
 function mostra_card_empresa(id) {
+
+
+    modal.classList.add("ativo");
+    sombra.classList.add("ativo");
 
     const dados_empresa = dados.find(d => d.CNPJ == id);
     console.log(dados_empresa);
 
     popula_informacoes_empresa(dados_empresa);
 
+}
+
+function esconde_card_empresa() {
 
 
+function formata_valor_brasileiro(valor) {
+
+    const numero = Number(valor);
+    return Number.isFinite(numero) ? numero.toLocaleString("pt-BR") : valor;
+
+}
+    sombra.classList.remove("ativo");
+    modal.classList.remove("ativo");  
+
+}
+
+sombra.addEventListener("click", e => {
+
+    esconde_card_empresa();
+
+})
+
+btn_fechar_card.addEventListener("click", e => {
+
+    esconde_card_empresa();
+
+})
+
+function formatarNumero(valor, casasDecimais = 0) {
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: casasDecimais,
+    maximumFractionDigits: casasDecimais
+  }).format(valor);
 }
 
 function popula_informacoes_empresa(dados_empresa) {
@@ -232,7 +271,9 @@ function popula_informacoes_empresa(dados_empresa) {
     campos.forEach(campo => {
 
         const key = campo.dataset.cardEmpresa;
-        campo.innerHTML = dados_empresa[key];
+        const valor_numerico = campo.classList.contains("valor-numerico");
+        const valor = dados_empresa[key]
+        campo.innerHTML = valor_numerico ? valor : valor;
 
     })
 

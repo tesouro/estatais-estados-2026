@@ -239,7 +239,59 @@ ul.box-container-empresas-setor li.empresa-do-setor:hover {
     border-radius: 5px;
     padding: .5rem;
     box-shadow: 0 0 5px #333;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    bottom: 1rem;
+    right: 1rem;
+    background-color: #fefefe;
+    display: none;
 
+}
+
+#card-empresa.ativo {
+
+    display: block;
+
+}
+
+#sombra-card-empresa {
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    background-color: #333;
+    pointer-events: none;
+    transition: opacity .5s;    
+
+}
+
+#sombra-card-empresa.ativo {
+
+    pointer-events: all;
+    opacity: .9;
+
+}
+
+button.fechar-card {
+    position: absolute;
+    top: 1.33rem;
+    right: 1.33rem;
+    background-color: transparent;
+    border: none;
+    font-size: 2rem;
+    font-family: sans-serif;
+    font-weight: bold;
+    padding: 0;
+    height: 2rem;
+    transition: transform .3s;
+}
+
+button.fechar-card:hover {
+    transform: scale(120%);
 }
 
 .mosaico-info-empresa {
