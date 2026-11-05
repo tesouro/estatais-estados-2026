@@ -3,7 +3,7 @@ const container_mapa = document.querySelector(".container-mapa");
 //const mapa = d3.select(".mapa");
 
 let mapa;
-let grafico_barras;
+let grafico_barras, grafico_lucro_prej_consol;
 let dados;
 
 fetch("dados.json").then(response => response.json()).then(data => {
@@ -11,6 +11,8 @@ fetch("dados.json").then(response => response.json()).then(data => {
     console.log(data);
 
     dados = data.dados;
+
+    //console.log(dados.map(d => d["Lucro / Prejuízo Líquido do Exercício"]))
 
     const geojson = {
         type: "FeatureCollection",
@@ -23,6 +25,8 @@ fetch("dados.json").then(response => response.json()).then(data => {
 
     mapa = new Mapa(".mapa", geojson);
     grafico_barras = new GraficoBarras("grafico-barras", dados, data.categorias);
+
+    grafico_lucro_prej_consol = new GraficoContaLucroPrejuizo("grafico-conta-lucro-preju", dados, grafico_barras.setores, grafico_barras.ufs);
 
     controle_aba.dataset.abaVisivel = "mapa";
 
@@ -406,6 +410,105 @@ class GraficoBarras {
             .delay( (d,i) => i * 50)
             .style("opacity", 1)
         ;
+    }
+
+}
+
+class GraficoContaLucroPrejuizo {
+
+    constructor(ref, dados, setores, ufs) {
+
+        this.dados = dados;
+        this.setores = setores;
+        this.ufs = ufs;
+
+        this.svg = d3.select("." + ref);
+        this.container = d3.select(".container-" + ref);
+
+        this.w = +this.svg.style("width").slice(0,-2);
+        this.h = +this.svg.style("height").slice(0,-2);
+
+        this.margin = 10;
+
+        this.svg.attr("viewBox", `0 0 ${this.w} ${this.h}`);
+        this.svg.attr("width", this.w);
+        this.svg.attr("height", this.h);        
+
+        this.prepara_dados();
+
+
+    }
+
+    prepara_dados() {
+
+        this.summary = {};
+
+        this.summary["total"] = {};
+
+        ["DEPENDENTE", "NÃO DEPENDENTE"].forEach(dep => {
+
+            this.summary[dep] = {};
+            this.summary[dep]["total"] = {};
+            this.summary[dep]["total"]["total"] = {
+                lucro : 0,
+                preju : 0,
+                total : 0
+            };
+
+            this.ufs.forEach(uf => {
+
+                this.summary[dep][uf] = {};
+
+                //this.summary["total"][uf] = {};
+
+                this.summary[dep][uf]["total"] = {
+                    "lucro" : 0,
+                    "preju" : 0,
+                    "total" : 0
+                }
+
+                let total_uf_setor_lucro = 0;
+                let total_uf_setor_preju = 0;
+                let total_uf_setor_total = 0;
+
+                this.setores.forEach(setor => {
+
+                    //this.summary["total"][uf][setor] = {}
+
+                    const mini_dados = this.dados.filter(
+                        d => 
+                            d["Setor"] == setor && 
+                            d["UF"] == uf &&
+                            d["Dependência"] == dep
+                    );
+
+                    const count_lucro = mini_dados.filter(d => {
+                        let lucro = d["Lucro / Prejuízo Líquido do Exercício"];
+                        lucro = Number(lucro.replace(",", "."));
+                        console.log(lucro);
+                        return (lucro > 0)
+                    }).length;
+                    const total = mini_dados.length;
+                    const count_preju = total - count_lucro;
+
+                    this.summary[dep][uf][setor] = {
+                        "lucro" : count_lucro,
+                        "preju" : count_preju,
+                        "total" : total
+                    }
+
+                    this.summary[dep][uf]["total"].lucro += count_lucro;
+                    this.summary[dep][uf]["total"].preju += count_preju;
+                    this.summary[dep][uf]["total"].total += total;
+
+                })
+
+            })
+
+        })
+
+        console.log(this.summary);
+
     }
 
 }

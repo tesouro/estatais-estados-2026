@@ -256,6 +256,7 @@
                         </div>
 
                     </div>
+                </div>
 
             </div>
 
@@ -263,16 +264,34 @@
 
         <div class="wrapper-visao-consolidada">
 
-            <h2 class="titulo-grafico-barras">Total de empresas por <select name="seletor-modo-grafico-barra" id="">
-                <option value="setor">setor</option>
-                <option value="uf">UF</option>
-            </select></h2>
+            <div class="wrapper-grafico">
 
-            <div class="container-grafico-barras">
+                <h2 class="titulo-grafico-barras titulo-grafico">Total de empresas por 
+                    <select name="seletor-modo-grafico-barra" id="">
+                        <option value="setor">setor</option>
+                        <option value="uf">UF</option>
+                    </select>
+                </h2>
 
-                <svg class="grafico-barras"></svg>
+                <div class="container-grafico-barras container-grafico">
 
+                    <svg class="grafico-barras grafico"></svg>
+
+                </div>
             </div>
+
+            <div class="wrapper-grafico">
+
+                <h2>Quantidade de empresas com Lucros ou Prejuízos</h2>
+
+
+                <div class="container-grafico-conta-lucro-preju container-grafico">
+
+                    <svg class="grafico-conta-lucro-preju grafico"></svg>
+
+                </div>
+            </div>
+
         </div>
 
     </main>

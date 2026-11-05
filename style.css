@@ -54,6 +54,7 @@ button[data-modo] {
     text-align: center;
     width: 100%;
     font-size: 1rem;
+    font-family: inherit;
 }
 
 button[data-modo].ativo {
@@ -69,8 +70,6 @@ button[data-modo].ativo {
 
 .wrapper-visao-consolidada {
     margin: 2rem;
-    border: 1px solid #333;
-    border-radius: 10px;
 }
 
 h2 {
@@ -78,18 +77,27 @@ h2 {
 }
 
 .container-mapa,
-.container-grafico-barras {
+.container-grafico {
     width: 500px;
     height: 500px;
     margin: 0 auto;
 }
 
+.wrapper-grafico {
+    border: 1px solid #333;
+    border-radius: 10px;
+}
+
+.wrapper-grafico + .wrapper-grafico {
+    margin-top: 1rem;
+}
+
 .container-grafico-barras {
-    height: 800px;
+    height: 850px;
 }
 
 .mapa,
-.grafico-barras {
+.grafico {
     width: 100%;
     height: 100%;
     display: block;
@@ -108,6 +116,7 @@ path.uf:hover, path.uf.ativo {
 }
 
 /* grafico barras*/
+
 .grafico-barras {
 
 }
