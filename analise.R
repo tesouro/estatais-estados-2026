@@ -44,13 +44,51 @@ mapa_ufs_simp_digitos <- mapa_ufs_simp %>%
   geojsonsf::sf_geojson(digits = 6) %>%
   geojsonsf::geojson_sf()
 
+
+# qdes-empresas-lucro-prejuizo --------------------------------------------
+
+dados_lucro_preju <- raw_data %>%
+  mutate(
+    lucro_preju = ifelse(`Lucro / Prejuízo Líquido do Exercício` > 0, "lucro", "prejuízo")
+    ) %>%
+  count(
+    UF,Setor, Dependência, lucro_preju
+  )
+
+dados_lucro_preju_total_UF <- dados_lucro_preju %>%
+  count(UF, Dependência, lucro_preju) %>%
+  mutate(Setor = "Todos")
+
+dados_lucro_preju_total_Setor <- dados_lucro_preju %>%
+  count(Setor, Dependência, lucro_preju) %>%
+  mutate(UF = "Todas")
+
+dados_lucro_preju_total <- dados_lucro_preju %>%
+  count(Dependência, lucro_preju) %>%
+  mutate(
+    UF = "Todas",
+    Setor = "Todos"
+  )
+
+lucro_preju <- bind_rows(
+  dados_lucro_preju,
+  dados_lucro_preju_total_UF,
+  dados_lucro_preju_total_Setor,
+  dados_lucro_preju_total
+) %>%
+  pivot_wider(names_from = `Dependência`, values_from = n, values_fill = 0) %>%
+  mutate(TOTAL = DEPENDENTE + `NÃO DEPENDENTE`)
+
+
+
 output <- list(
   mapa = mapa_ufs_simp_digitos,
   dados = data_com_posicoes,
   categorias = list(
     setor = ranking_setores,
     uf = ranking_uf
-  )
+  ),
+  lucro_preju = lucro_preju
 )
 
 jsonlite::write_json(output, "dados.json")
