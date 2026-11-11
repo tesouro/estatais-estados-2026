@@ -81,6 +81,7 @@ h2 {
     width: 500px;
     height: 500px;
     margin: 0 auto;
+    position: relative;
 }
 
 .wrapper-grafico {
@@ -147,6 +148,63 @@ path.uf:hover, path.uf.ativo {
     position: absolute;
     transform: translateY(-100%);
     font-size: .7em;
+}
+
+/* grafico qde empresas lucro / preju */
+
+.grafico-conta-lucro-preju rect.preju {
+    fill: firebrick;
+}
+
+.grafico-conta-lucro-preju rect.lucro {
+    fill: dodgerblue;
+}
+
+.legenda-grafico {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    width: 100%;
+    justify-content: center;
+    font-size: .8rem;
+    align-items: center;
+}
+
+.legenda-grafico .key-legenda {
+    display: flex;
+    flex-direction: row;
+    gap: .5em;
+    align-items: center;
+    flex: 1 1 35%;
+    justify-content: flex-start;
+}
+
+.legenda-grafico .key-legenda:first-of-type {
+    justify-content: flex-end;
+}
+
+.key-legenda .key {
+    flex-basis: 1em;
+    height: 1em;
+}
+
+.key-lucro { background-color: steelblue; }
+.key-preju { background-color: firebrick; }
+
+p.texto-legendas-y,
+p.texto-legendas-x {
+    position: absolute;
+    margin: 0;
+    font-size: .8rem;
+    transform: translate(-100%, -50%);
+    padding-right: .5em;
+    line-height: .8rem;
+}
+
+p.texto-legendas-x {
+    transform: translate(-50%, 0%);
+    padding-right: 0;
+    padding-top: .5em;
 }
 
 /*BOX LISTA EMPRESAS */

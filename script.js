@@ -3,7 +3,7 @@ const container_mapa = document.querySelector(".container-mapa");
 //const mapa = d3.select(".mapa");
 
 let mapa;
-let grafico_barras, grafico_lucro_prej_consol;
+let grafico_barras, grafico_qde_lucro_prej;
 let dados;
 
 fetch("dados.json").then(response => response.json()).then(data => {
@@ -11,6 +11,7 @@ fetch("dados.json").then(response => response.json()).then(data => {
     console.log(data);
 
     dados = data.dados;
+    lucro_preju = data.lucro_preju;
 
     //console.log(dados.map(d => d["Lucro / Prejuízo Líquido do Exercício"]))
 
@@ -26,13 +27,9 @@ fetch("dados.json").then(response => response.json()).then(data => {
     mapa = new Mapa(".mapa", geojson);
     grafico_barras = new GraficoBarras("grafico-barras", dados, data.categorias);
 
-    grafico_lucro_prej_consol = new GraficoContaLucroPrejuizo("grafico-conta-lucro-preju", dados, grafico_barras.setores, grafico_barras.ufs);
+    grafico_qde_lucro_prej = new GraficoQdeLucroPrejuizo("grafico-conta-lucro-preju", lucro_preju, grafico_barras.setores, grafico_barras.ufs);
 
     controle_aba.dataset.abaVisivel = "mapa";
-
-
-
-
 
 })
 
@@ -414,7 +411,7 @@ class GraficoBarras {
 
 }
 
-class GraficoContaLucroPrejuizo {
+class GraficoQdeLucroPrejuizo {
 
     constructor(ref, dados, setores, ufs) {
 
@@ -428,86 +425,109 @@ class GraficoContaLucroPrejuizo {
         this.w = +this.svg.style("width").slice(0,-2);
         this.h = +this.svg.style("height").slice(0,-2);
 
-        this.margin = 10;
+        this.margin = 15;
 
         this.svg.attr("viewBox", `0 0 ${this.w} ${this.h}`);
         this.svg.attr("width", this.w);
-        this.svg.attr("height", this.h);        
+        this.svg.attr("height", this.h);  
+        
+        this.monta_componentes_grafico();
+        this.monta_eixos();
+        this.constroi_grafico();
 
-        this.prepara_dados();
+    }
+
+    monta_componentes_grafico() {
+
+        this.x = d3.scaleBand()
+            .domain(["DEPENDENTE", "NÃO DEPENDENTE", "TOTAL"])
+            .range([
+                this.margin * 2,
+                this.w - this.margin
+            ])
+        ;
+
+        this.y = d3.scaleLinear()
+            .domain([0, 1])
+            .range([this.margin, this.h - this.margin * 3])
+        ;
+
+        this.h_ = d3.scaleLinear()
+            .domain([0, 1])
+            .range([0, this.h - 4 * this.margin])
+        ;
+
+    }
+
+    monta_eixos() {
+
+        const data_y = [0, 0.25, 0.5, 0.75, 1];
+        const data_x = ["DEPENDENTE", "NÃO DEPENDENTE", "TOTAL"];
+
+
+        // y
+
+        this.svg.append("g").classed("legendas", true)
+            .selectAll("line.legenda-y")
+            .data(data_y)
+            .join("line")
+            .classed("leganda-y", true)
+            .attr("x1", this.x("DEPENDENTE") + this.x.bandwidth() * 0.5 - 20)
+            .attr("x2", this.x("DEPENDENTE") + this.x.bandwidth() * 0.5 - 10)
+            .attr("y1", d => this.y(d))
+            .attr("y2", d => this.y(d))
+            .attr("stroke", "black")    
+        ;
+
+        this.container.selectAll("p.texto-legendas-y")
+            .data(data_y)
+            .join("p")
+            .classed("texto-legendas-y", true)
+            .style("left", (this.x("DEPENDENTE") + this.x.bandwidth() * 0.5 - 20) + "px")
+            .style("top", d => this.y(d) + "px")
+            .text(d => (1 - d) * 100 + "%")
+        ;
+
+        // x
+
+        this.svg.append("g").classed("legendas", true)
+            .selectAll("line.legenda-x")
+            .data(data_x)
+            .join("line")
+            .classed("leganda-x", true)
+            .attr("x1", d => this.x(d) + this.x.bandwidth() * 0.75)
+            .attr("x2", d => this.x(d) + this.x.bandwidth() * 0.75)
+            .attr("y1", d => this.y(1) + 10)
+            .attr("y2", d => this.y(1) + 20)
+            .attr("stroke", "black")    
+        ;        
+
+        this.container.selectAll("p.texto-legendas-x")
+            .data(data_x)
+            .join("p")
+            .classed("texto-legendas-x", true)
+            .style("left", d => (this.x(d) + this.x.bandwidth() * 0.75) + "px")
+            .style("top", d => this.y(1) + 20 + "px")
+            .text(d => d)
+        ;
 
 
     }
 
-    prepara_dados() {
+    constroi_grafico() {
 
-        this.summary = {};
+        const mini_data = this.dados.filter(d => d.UF == "Todas" && d["Setor"] == "Todos");
 
-        this.summary["total"] = {};
+        console.log(mini_data);
 
-        ["DEPENDENTE", "NÃO DEPENDENTE"].forEach(dep => {
-
-            this.summary[dep] = {};
-            this.summary[dep]["total"] = {};
-            this.summary[dep]["total"]["total"] = {
-                lucro : 0,
-                preju : 0,
-                total : 0
-            };
-
-            this.ufs.forEach(uf => {
-
-                this.summary[dep][uf] = {};
-
-                //this.summary["total"][uf] = {};
-
-                this.summary[dep][uf]["total"] = {
-                    "lucro" : 0,
-                    "preju" : 0,
-                    "total" : 0
-                }
-
-                let total_uf_setor_lucro = 0;
-                let total_uf_setor_preju = 0;
-                let total_uf_setor_total = 0;
-
-                this.setores.forEach(setor => {
-
-                    //this.summary["total"][uf][setor] = {}
-
-                    const mini_dados = this.dados.filter(
-                        d => 
-                            d["Setor"] == setor && 
-                            d["UF"] == uf &&
-                            d["Dependência"] == dep
-                    );
-
-                    const count_lucro = mini_dados.filter(d => {
-                        let lucro = d["Lucro / Prejuízo Líquido do Exercício"];
-                        lucro = Number(lucro.replace(",", "."));
-                        console.log(lucro);
-                        return (lucro > 0)
-                    }).length;
-                    const total = mini_dados.length;
-                    const count_preju = total - count_lucro;
-
-                    this.summary[dep][uf][setor] = {
-                        "lucro" : count_lucro,
-                        "preju" : count_preju,
-                        "total" : total
-                    }
-
-                    this.summary[dep][uf]["total"].lucro += count_lucro;
-                    this.summary[dep][uf]["total"].preju += count_preju;
-                    this.summary[dep][uf]["total"].total += total;
-
-                })
-
-            })
-
-        })
-
-        console.log(this.summary);
+        this.svg.selectAll("rect.lucro-preju").data(mini_data).join("rect")
+            .attr("class", d => d.tipo)
+            .classed("lucro-preju", true)
+            .attr("x", d => this.x(d["Dependencia"]) + this.x.bandwidth() * 0.5)
+            .attr("y", d => this.y(d.h0))
+            .attr("height", d => this.h_(d.pct))
+            .attr("width", this.x.bandwidth() * 0.5)
+        ;
 
     }
 
