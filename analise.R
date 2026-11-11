@@ -77,7 +77,23 @@ lucro_preju <- bind_rows(
   dados_lucro_preju_total
 ) %>%
   pivot_wider(names_from = `Dependência`, values_from = n, values_fill = 0) %>%
-  mutate(TOTAL = DEPENDENTE + `NÃO DEPENDENTE`)
+  mutate(TOTAL = DEPENDENTE + `NÃO DEPENDENTE`) %>%
+  pivot_longer(cols = c("DEPENDENTE", "NÃO DEPENDENTE", "TOTAL"), names_to = "Dependencia") %>%
+  pivot_wider(names_from = lucro_preju, values_from = value, values_fill = 0) %>%
+  mutate(
+    lucro_pct = lucro / (lucro + prejuízo),
+    preju_pct = prejuízo / (lucro + prejuízo),
+    lucro_h0 = 0,
+    preju_h0 = lucro_pct
+  ) %>%
+  rename(
+    lucro_qde = lucro,
+    preju_qde = prejuízo
+  ) %>%
+  pivot_longer(cols = c(lucro_qde, lucro_h0, lucro_pct, preju_qde, preju_h0, preju_pct), 
+               names_to = c("tipo", ".value"),
+               names_sep = "_"
+               )
 
 
 
