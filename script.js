@@ -410,6 +410,25 @@ class GraficoQdeLucroPrejuizo {
             .attr("width", this.x.bandwidth() * 0.5)
         ;
 
+        this.adiciona_rotulos(mini_data);
+
+    }
+
+    adiciona_rotulos(mini_data) {
+
+        this.container.selectAll("span.rotulo-grafico")
+            .data(mini_data)
+            .join("span")
+            .classed("rotulo-grafico", true)
+            .classed("escondido", d => d.qde == 0)
+            .style("top", d => this.y(d.h0) + "px")
+            .style("left", 
+                d => (this.x(d["Dependencia"]) + this.x.bandwidth() * 0.5) + "px"
+            )
+            .style("width", (this.x.bandwidth() * 0.5) + "px" )
+            .html(d => `${d.qde}<br> (${(d.pct * 100).toFixed(1)}%)`)
+        ;
+
     }
 
     atualiza_grafico() {
@@ -419,6 +438,7 @@ class GraficoQdeLucroPrejuizo {
             d["Setor"] == this.setor_atual
         );
 
+
         this.svg.selectAll("rect.lucro-preju")
             .data(mini_data)
             .transition()
@@ -427,7 +447,9 @@ class GraficoQdeLucroPrejuizo {
             .attr("y", d => this.y(d.h0))
             .attr("height", d => this.h_(d.pct))
             .attr("width", this.x.bandwidth() * 0.5)
-        ;            
+        ;      
+        
+        this.adiciona_rotulos(mini_data);
 
 
     }

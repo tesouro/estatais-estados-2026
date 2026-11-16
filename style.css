@@ -214,6 +214,18 @@ p.texto-legendas-x {
     margin: 1rem auto;
 }
 
+.container-grafico-conta-lucro-preju span.rotulo-grafico {
+    position: absolute;
+    font-size: .7em;
+    text-align: center;
+    color: white;
+}
+
+
+.container-grafico-conta-lucro-preju span.rotulo-grafico.escondido {
+    display: none;
+}
+
 
 
 /*BOX LISTA EMPRESAS */
