@@ -267,7 +267,7 @@
             <div class="wrapper-grafico">
 
                 <h2 class="titulo-grafico-barras titulo-grafico">Total de empresas por 
-                    <select name="seletor-modo-grafico-barra" id="">
+                    <select name="seletor-modo-grafico-barra" class="seletor-grafico" id="">
                         <option value="setor">setor</option>
                         <option value="uf">UF</option>
                     </select>
@@ -283,6 +283,19 @@
             <div class="wrapper-grafico">
 
                 <h2>Quantidade de empresas com Lucros ou Prejuízos</h2>
+
+                <div class="wrapper-seletores-lucro-preju">
+                    <div class="conjunto-texto-seletor">
+                        <span class="texto-seletor">Setor</span>
+                        <select name="seletor-setor-lucro-preju" id="" class="seletor-grafico"></select>
+                    </div> 
+                    <div class="conjunto-texto-seletor">
+                        <span class="texto-seletor">UF</span>
+                        <select name="seletor-uf-lucro-preju" id="" class="seletor-grafico"></select>
+                    </div>
+                </div>
+
+
 
                 <div class="legenda-grafico">
                     <div class="key-legenda">

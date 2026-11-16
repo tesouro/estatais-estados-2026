@@ -132,7 +132,7 @@ path.uf:hover, path.uf.ativo {
     stroke: var(--cor-nao-dep);
 }
 
-.titulo-grafico-barras select {
+select.seletor-grafico {
     font-size: inherit;
     font-weight: inherit;
     border-color: currentColor;
@@ -206,6 +206,15 @@ p.texto-legendas-x {
     padding-right: 0;
     padding-top: .5em;
 }
+
+.wrapper-seletores-lucro-preju {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    margin: 1rem auto;
+}
+
+
 
 /*BOX LISTA EMPRESAS */
 
