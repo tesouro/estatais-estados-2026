@@ -483,6 +483,7 @@ class GraficoQdeLucroPrejuizo {
 
 // BOTOES
 
+const body = document.querySelector("body");
 const controle_aba = document.querySelector("[data-aba-visivel]");
 const barra_controle = document.querySelector(".barra-controle");
 const seletor_grafico_barras = document.querySelector('.titulo-grafico-barras select');
@@ -499,6 +500,21 @@ function reseta_lista_empresas() {
     document.querySelectorAll("li.empresa-do-setor").forEach(li => {
         li.classList.remove("selected");
     })
+
+}
+
+const formataReal = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+ });
+
+function formata_valor_brasileiro(valor) {
+
+    const valor_ = Number(String(valor).replace(",", "."));
+
+    return formataReal.format(valor_);
 
 }
 
@@ -548,6 +564,7 @@ const btn_fechar_card = document.querySelector("button.fechar-card");
 function mostra_card_empresa(id) {
 
 
+    body.classList.add("no-scroll");
     modal.classList.add("ativo");
     sombra.classList.add("ativo");
 
@@ -560,15 +577,9 @@ function mostra_card_empresa(id) {
 
 function esconde_card_empresa() {
 
-
-function formata_valor_brasileiro(valor) {
-
-    const numero = Number(valor);
-    return Number.isFinite(numero) ? numero.toLocaleString("pt-BR") : valor;
-
-}
     sombra.classList.remove("ativo");
     modal.classList.remove("ativo");  
+    body.classList.remove("no-scroll");
 
 }
 
@@ -599,8 +610,9 @@ function popula_informacoes_empresa(dados_empresa) {
 
         const key = campo.dataset.cardEmpresa;
         const valor_numerico = campo.classList.contains("valor-numerico");
-        const valor = dados_empresa[key]
-        campo.innerHTML = valor_numerico ? valor : valor;
+        const valor = dados_empresa[key];
+
+        campo.innerHTML = valor_numerico ? formata_valor_brasileiro(valor) : valor;
 
     })
 

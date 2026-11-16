@@ -15,6 +15,10 @@ body {
     margin: .5rem;
 }
 
+body.no-scroll {
+    overflow: hidden;
+}
+
 header {
     margin: 1rem 0 40px 40px;
 }
@@ -332,6 +336,7 @@ ul.box-container-empresas-setor li.empresa-do-setor:hover {
     left: 1rem;
     bottom: 1rem;
     right: 1rem;
+    overflow: scroll;
     background-color: #fefefe;
     display: none;
 
@@ -407,6 +412,7 @@ button.fechar-card:hover {
 p[data-card-empresa] {
     margin-top: .5em;
     font-weight: bold;
+    font-size: .9em;
 }
 
 .wrapper-link-carta {
