@@ -311,7 +311,7 @@ class GraficoQdeLucroPrejuizo {
         
         this.monta_componentes_grafico();
         this.monta_eixos();
-        this.constroi_grafico();
+        this.atualiza_grafico();
 
         this.popula_seletores();
         this.monitora_seletores();
@@ -395,9 +395,9 @@ class GraficoQdeLucroPrejuizo {
 
     }
 
-    constroi_grafico() {
+    atualiza_grafico() {
 
-        const mini_data = this.dados.filter(d => d.UF == "Todas" && d["Setor"] == "Todos");
+        const mini_data = this.dados.filter(d => d.UF == this.uf_atual && d["Setor"] == this.setor_atual);
 
         console.log(mini_data);
 
@@ -405,9 +405,11 @@ class GraficoQdeLucroPrejuizo {
             .attr("class", d => d.tipo)
             .classed("lucro-preju", true)
             .attr("x", d => this.x(d["Dependencia"]) + this.x.bandwidth() * 0.5)
-            .attr("y", d => this.y(d.h0))
-            .attr("height", d => this.h_(d.pct))
             .attr("width", this.x.bandwidth() * 0.5)
+            .transition()
+            .duration(500)
+            .attr("y", d => this.y(d.h0))
+            .attr("height", d => this.h_(d.pct))            
         ;
 
         this.adiciona_rotulos(mini_data);
@@ -431,7 +433,7 @@ class GraficoQdeLucroPrejuizo {
 
     }
 
-    atualiza_grafico() {
+    nao_atualiza_grafico() {
 
         const mini_data = this.dados.filter(d => 
             d.UF == this.uf_atual && 
