@@ -155,134 +155,6 @@ class Mapa {
     }
 }
 
-// BOTOES
-
-const controle_aba = document.querySelector("[data-aba-visivel]");
-const barra_controle = document.querySelector(".barra-controle");
-const seletor_grafico_barras = document.querySelector('.titulo-grafico-barras select');
-const box_setores = document.querySelector(".box-setores");
-
-function reseta_botoes() {
-
-    barra_controle.querySelectorAll("button").forEach(btn => btn.classList.remove("ativo"));
-
-}
-
-function reseta_lista_empresas() {
-
-    document.querySelectorAll("li.empresa-do-setor").forEach(li => {
-        li.classList.remove("selected");
-    })
-
-}
-
-barra_controle.addEventListener("click", e => {
-
-    if (e.target.tagName == "BUTTON") {
-
-        const modo = e.target.dataset.modo;
-        
-        reseta_botoes();
-
-        e.target.classList.add("ativo");
-
-        controle_aba.dataset.abaVisivel = modo;
-
-    }
-
-});
-
-seletor_grafico_barras.addEventListener("change", e => {
-
-    const modo = e.target.value;
-
-    grafico_barras.atualiza_grafico(modo);
-    grafico_barras.mostra_rotulos(modo);
-
-})
-
-box_setores.addEventListener("click", e => {
-
-    const el = e.target;
-
-    if (el.tagName == "LI") {
-
-        reseta_lista_empresas();
-        el.classList.add("selected");
-        mostra_card_empresa(el.dataset.idEmpresa);
-
-    }
-
-})
-
-const modal = document.querySelector("#card-empresa");
-const sombra = document.querySelector("#sombra-card-empresa");
-const btn_fechar_card = document.querySelector("button.fechar-card");
-
-function mostra_card_empresa(id) {
-
-
-    modal.classList.add("ativo");
-    sombra.classList.add("ativo");
-
-    const dados_empresa = dados.find(d => d.CNPJ == id);
-    console.log(dados_empresa);
-
-    popula_informacoes_empresa(dados_empresa);
-
-}
-
-function esconde_card_empresa() {
-
-
-function formata_valor_brasileiro(valor) {
-
-    const numero = Number(valor);
-    return Number.isFinite(numero) ? numero.toLocaleString("pt-BR") : valor;
-
-}
-    sombra.classList.remove("ativo");
-    modal.classList.remove("ativo");  
-
-}
-
-sombra.addEventListener("click", e => {
-
-    esconde_card_empresa();
-
-})
-
-btn_fechar_card.addEventListener("click", e => {
-
-    esconde_card_empresa();
-
-})
-
-function formatarNumero(valor, casasDecimais = 0) {
-  return new Intl.NumberFormat("pt-BR", {
-    minimumFractionDigits: casasDecimais,
-    maximumFractionDigits: casasDecimais
-  }).format(valor);
-}
-
-function popula_informacoes_empresa(dados_empresa) {
-
-    const campos = document.querySelectorAll("[data-card-empresa]");
-
-    campos.forEach(campo => {
-
-        const key = campo.dataset.cardEmpresa;
-        const valor_numerico = campo.classList.contains("valor-numerico");
-        const valor = dados_empresa[key]
-        campo.innerHTML = valor_numerico ? valor : valor;
-
-    })
-
-    document.querySelector(".link-carta").href = dados_empresa["Link Carta Anual"];
-
-
-}
-
 
 class GraficoBarras {
 
@@ -419,8 +291,14 @@ class GraficoQdeLucroPrejuizo {
         this.setores = setores;
         this.ufs = ufs;
 
+        this.setor_atual = "Todos";
+        this.uf_atual = "Todas";
+
         this.svg = d3.select("." + ref);
         this.container = d3.select(".container-" + ref);
+
+        this.seletor_setor = document.querySelector('[name="seletor-setor-lucro-preju"]');
+        this.seletor_uf = document.querySelector('[name="seletor-uf-lucro-preju"]');
 
         this.w = +this.svg.style("width").slice(0,-2);
         this.h = +this.svg.style("height").slice(0,-2);
@@ -434,6 +312,9 @@ class GraficoQdeLucroPrejuizo {
         this.monta_componentes_grafico();
         this.monta_eixos();
         this.constroi_grafico();
+
+        this.popula_seletores();
+        this.monitora_seletores();
 
     }
 
@@ -531,5 +412,198 @@ class GraficoQdeLucroPrejuizo {
 
     }
 
+    atualiza_grafico() {
+
+        const mini_data = this.dados.filter(d => 
+            d.UF == this.uf_atual && 
+            d["Setor"] == this.setor_atual
+        );
+
+        this.svg.selectAll("rect.lucro-preju")
+            .data(mini_data)
+            .transition()
+            .duration(500)
+            .attr("x", d => this.x(d["Dependencia"]) + this.x.bandwidth() * 0.5)
+            .attr("y", d => this.y(d.h0))
+            .attr("height", d => this.h_(d.pct))
+            .attr("width", this.x.bandwidth() * 0.5)
+        ;            
+
+
+    }
+
+    popula_seletores() {
+
+        this.setores.forEach(setor => {
+
+            const new_option = document.createElement("option");
+            
+            new_option.value = setor;
+            new_option.textContent = setor;
+
+            this.seletor_setor.appendChild(new_option);
+
+        });
+
+        this.ufs.forEach(uf => {
+
+            const new_option = document.createElement("option");
+            
+            new_option.value = uf;
+            new_option.textContent = uf;
+
+            this.seletor_uf.appendChild(new_option);
+
+        });        
+
+    }
+
+    monitora_seletores() {
+
+        this.seletor_setor.addEventListener("change", e => {
+
+            this.setor_atual = e.target.value;
+            this.atualiza_grafico();
+
+        })
+
+        this.seletor_uf.addEventListener("change", e => {
+
+            this.uf_atual = e.target.value;
+            this.atualiza_grafico();
+
+        })
+
+    }
+
 }
+
+// BOTOES
+
+const controle_aba = document.querySelector("[data-aba-visivel]");
+const barra_controle = document.querySelector(".barra-controle");
+const seletor_grafico_barras = document.querySelector('.titulo-grafico-barras select');
+const box_setores = document.querySelector(".box-setores");
+
+function reseta_botoes() {
+
+    barra_controle.querySelectorAll("button").forEach(btn => btn.classList.remove("ativo"));
+
+}
+
+function reseta_lista_empresas() {
+
+    document.querySelectorAll("li.empresa-do-setor").forEach(li => {
+        li.classList.remove("selected");
+    })
+
+}
+
+barra_controle.addEventListener("click", e => {
+
+    if (e.target.tagName == "BUTTON") {
+
+        const modo = e.target.dataset.modo;
+        
+        reseta_botoes();
+
+        e.target.classList.add("ativo");
+
+        controle_aba.dataset.abaVisivel = modo;
+
+    }
+
+});
+
+seletor_grafico_barras.addEventListener("change", e => {
+
+    const modo = e.target.value;
+
+    grafico_barras.atualiza_grafico(modo);
+    grafico_barras.mostra_rotulos(modo);
+
+})
+
+box_setores.addEventListener("click", e => {
+
+    const el = e.target;
+
+    if (el.tagName == "LI") {
+
+        reseta_lista_empresas();
+        el.classList.add("selected");
+        mostra_card_empresa(el.dataset.idEmpresa);
+
+    }
+
+})
+
+const modal = document.querySelector("#card-empresa");
+const sombra = document.querySelector("#sombra-card-empresa");
+const btn_fechar_card = document.querySelector("button.fechar-card");
+
+function mostra_card_empresa(id) {
+
+
+    modal.classList.add("ativo");
+    sombra.classList.add("ativo");
+
+    const dados_empresa = dados.find(d => d.CNPJ == id);
+    console.log(dados_empresa);
+
+    popula_informacoes_empresa(dados_empresa);
+
+}
+
+function esconde_card_empresa() {
+
+
+function formata_valor_brasileiro(valor) {
+
+    const numero = Number(valor);
+    return Number.isFinite(numero) ? numero.toLocaleString("pt-BR") : valor;
+
+}
+    sombra.classList.remove("ativo");
+    modal.classList.remove("ativo");  
+
+}
+
+sombra.addEventListener("click", e => {
+
+    esconde_card_empresa();
+
+})
+
+btn_fechar_card.addEventListener("click", e => {
+
+    esconde_card_empresa();
+
+})
+
+function formatarNumero(valor, casasDecimais = 0) {
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: casasDecimais,
+    maximumFractionDigits: casasDecimais
+  }).format(valor);
+}
+
+function popula_informacoes_empresa(dados_empresa) {
+
+    const campos = document.querySelectorAll("[data-card-empresa]");
+
+    campos.forEach(campo => {
+
+        const key = campo.dataset.cardEmpresa;
+        const valor_numerico = campo.classList.contains("valor-numerico");
+        const valor = dados_empresa[key]
+        campo.innerHTML = valor_numerico ? valor : valor;
+
+    })
+
+    document.querySelector(".link-carta").href = dados_empresa["Link Carta Anual"];
+
+
+}
+
 
