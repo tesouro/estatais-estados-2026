@@ -132,6 +132,7 @@ ggplot(choropleth_summaries, aes(x = reorder(UF, qde), y = qde)) + geom_col()
 ggplot(choropleth_summaries, aes(x = reorder(UF, receita), y = receita)) + geom_col()
 ggplot(choropleth_summaries, aes(x = reorder(UF, desp_pessoal), y = desp_pessoal)) + geom_col()
 ggplot(choropleth_summaries, aes(x = reorder(UF, lucro_prejuizo), y = lucro_prejuizo)) + geom_col()
+ggplot(choropleth_summaries, aes(x = reorder(UF, pl), y = pl)) + geom_col()
 
 # output ------------------------------------------------------------------
 
