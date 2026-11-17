@@ -72,11 +72,17 @@ button[data-modo].ativo {
 [data-aba-visivel="mapa"] .wrapper-visao-consolidada { display: none; }
 [data-aba-visivel="consolidado"] .wrapper-visao-mapa { display: none; }
 
+/* MAPA */
+
 .wrapper-visao-consolidada {
     margin: 2rem;
 }
 
 h2 {
+    text-align: center;
+}
+
+p.selecao-coropletico {
     text-align: center;
 }
 

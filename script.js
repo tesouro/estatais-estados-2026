@@ -11,6 +11,9 @@ fetch("dados.json").then(response => response.json()).then(data => {
     console.log(data);
 
     dados = data.dados;
+
+    const sumario_coropletico = data.coropletico;
+
     lucro_preju = data.lucro_preju;
 
     //console.log(dados.map(d => d["Lucro / Prejuízo Líquido do Exercício"]))
@@ -24,7 +27,7 @@ fetch("dados.json").then(response => response.json()).then(data => {
         }))
     };
 
-    mapa = new Mapa(".mapa", geojson);
+    mapa = new Mapa(".mapa", geojson, sumario_coropletico);
     grafico_barras = new GraficoBarras("grafico-barras", dados, data.categorias);
 
     grafico_qde_lucro_prej = new GraficoQdeLucroPrejuizo("grafico-conta-lucro-preju", lucro_preju, grafico_barras.setores, grafico_barras.ufs);
@@ -35,9 +38,13 @@ fetch("dados.json").then(response => response.json()).then(data => {
 
 class Mapa {
 
-    constructor(ref, data) {
+    polygons;
+    cor;
+
+    constructor(ref, data, sumario_coropletico) {
 
         this.data = data;
+        this.sumario_coropletico = sumario_coropletico;
         this.svg = d3.select(ref);
 
         const res = 2;
@@ -59,11 +66,16 @@ class Mapa {
         this.draw_map();
         this.add_click_interaction();
 
+        this.variavel_coropletico = "qde";
+        this.seletor_coropletico = document.querySelector("[name='variavel-coropletico']");
+
+        this.monitora_seletor();
+
     }
 
     draw_map() {
 
-        this.svg.selectAll("path.uf")
+        this.polygons = this.svg.selectAll("path.uf")
             .data(this.data.features)
             .join("path")
             .classed("uf", true)
@@ -151,6 +163,79 @@ class Mapa {
 
 
         })
+
+    }
+
+    monitora_seletor() {
+
+        this.seletor_coropletico.addEventListener("change", e => {
+
+            this.variavel_coropletico = e.target.value;
+            console.log(this.variavel_coropletico);
+
+            this.atualiza_cor();
+
+        })
+
+    }
+
+    atualiza_cor() {
+
+        const valores = this.sumario_coropletico.map(d => d[this.variavel_coropletico]);
+
+        const vlr_min = d3.min(valores);
+        const vlr_max = d3.max(valores);
+        const vlr_mean = d3.mean(valores);
+        const vlr_q25 = d3.quantile(valores, .25);
+        const vlr_q75 = d3.quantile(valores, .75);
+
+        if (this.variavel_coropletico != "lucro_prejuizo") {
+
+            this.cor = d3.scaleQuantize().domain([vlr_min, vlr_max]).range(d3.schemeGnBu[5]);
+
+        } else {
+
+            this.cor_negativos = d3.scaleQuantize()
+                .domain([vlr_min, 0])
+                .range(d3.schemeReds[3].slice().reverse());
+
+            this.cor_positivos = d3.scaleQuantize()
+                .domain([0, vlr_max])
+                .range(d3.schemeBlues[3]);
+
+        }
+
+        //d3.scaleBand().domain(valores).range([vlr_min, vlr_q25, vlr_mean, vlr_q75, vlr_max]);
+
+        this.polygons.style("fill", d => {
+
+            const uf = d.properties.abbrev_state;
+
+            const el_array = this.sumario_coropletico.filter(x => x.UF == uf)[0];
+
+            if (!el_array) return "gray";
+
+            const valor = el_array[this.variavel_coropletico];
+
+            let color;
+
+            if (this.variavel_coropletico != "lucro_prejuizo") {
+
+                color = this.cor(valor);
+
+            } else {
+
+                color = valor < 0 ? this.cor_negativos(valor) : this.cor_positivos(valor);
+            }
+
+            return color;
+
+        })
+
+    }
+
+    constroi_legenda() {
+
 
     }
 }
