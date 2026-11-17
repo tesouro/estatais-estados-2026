@@ -86,6 +86,34 @@ p.selecao-coropletico {
     text-align: center;
 }
 
+.container-mapa .legenda-mapa h3 {
+
+    font-size: .8rem;
+    text-transform: uppercase;
+    margin: 0;
+
+
+}
+
+.legenda-grafico.legenda-mapa {
+    flex-direction: column;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    width: 400px;
+    align-items: flex-start;
+    gap: 0;
+}
+
+.legenda-grafico.legenda-mapa .linha-legenda {
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.legenda-grafico.legenda-mapa .linha-legenda:first-of-type {
+    justify-content: flex-start;
+}
+
 .container-mapa,
 .container-grafico {
     width: 500px;
@@ -180,7 +208,7 @@ select.seletor-grafico {
     align-items: center;
 }
 
-.legenda-grafico .key-legenda {
+.legenda-grafico .linha-legenda {
     display: flex;
     flex-direction: row;
     gap: .5em;
@@ -189,11 +217,11 @@ select.seletor-grafico {
     justify-content: flex-start;
 }
 
-.legenda-grafico .key-legenda:first-of-type {
+.legenda-grafico .linha-legenda:first-of-type {
     justify-content: flex-end;
 }
 
-.key-legenda .key {
+.linha-legenda .key {
     flex-basis: 1em;
     height: 1em;
 }

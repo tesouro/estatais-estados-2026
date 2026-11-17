@@ -70,6 +70,7 @@ class Mapa {
         this.seletor_coropletico = document.querySelector("[name='variavel-coropletico']");
 
         this.monitora_seletor();
+        this.atualiza_cor();
 
     }
 
@@ -185,10 +186,6 @@ class Mapa {
 
         const vlr_min = d3.min(valores);
         const vlr_max = d3.max(valores);
-        const vlr_mean = d3.mean(valores);
-        const vlr_q25 = d3.quantile(valores, .25);
-        const vlr_q75 = d3.quantile(valores, .75);
-
         if (this.variavel_coropletico != "lucro_prejuizo") {
 
             this.cor = d3.scaleQuantize().domain([vlr_min, vlr_max]).range(d3.schemeGnBu[5]);
@@ -204,8 +201,6 @@ class Mapa {
                 .range(d3.schemeBlues[3]);
 
         }
-
-        //d3.scaleBand().domain(valores).range([vlr_min, vlr_q25, vlr_mean, vlr_q75, vlr_max]);
 
         this.polygons.style("fill", d => {
 
@@ -232,10 +227,142 @@ class Mapa {
 
         })
 
+        this.constroi_legenda();
+
     }
 
     constroi_legenda() {
 
+        this.legenda = d3.select(".container-mapa div.legenda-mapa");
+
+        this.legenda.html("");
+
+        const conteudo_seletor = this.seletor_coropletico.selectedOptions[0].textContent;
+
+        this.legenda.append("h3").text(conteudo_seletor);
+
+        let valores_legenda, cores_legenda;
+
+        if (this.variavel_coropletico != "lucro_prejuizo") {
+
+            valores_legenda = this.cor.thresholds();
+            cores_legenda = this.cor.range();
+
+        } else {
+
+            valores_legenda = [...this.cor_negativos.thresholds(), 0, ...this.cor_positivos.thresholds()];
+
+            cores_legenda = [...this.cor_negativos.range(), ...this.cor_positivos.range()];
+
+        }
+
+        console.log(valores_legenda, cores_legenda);
+
+        cores_legenda.forEach( (cor,i) => {
+
+            let texto;
+
+            if (i == 0) {
+
+                texto = "Menos de " + valores_legenda[i];
+
+            } else if (i == cores_legenda.length - 1) {
+
+                texto = "Mais de " + valores_legenda[i-1];
+
+            } else {
+
+                texto = `${valores_legenda[i-1]} a ${valores_legenda[i]}`
+            }
+
+            const linha = this.legenda.append("div").classed("linha-legenda", true);
+
+            linha.append("span").classed("key", true).style("background-color", cor);
+
+            linha.append("span").classed("legenda-texto", true).text(texto);
+
+        })
+
+    }
+
+    constroi_legenda_by_Copilot() {
+
+        //feito por IA, ficou trash
+
+        const formatador = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+        const formatarIntervalo = (limites, indice, total) => {
+            const [min, max] = limites;
+
+            if (indice === 0) return `≤ ${formatador.format(max)}`;
+            if (indice === total - 1) return `≥ ${formatador.format(min)}`;
+            return `${formatador.format(min)}–${formatador.format(max)}`;
+        };
+
+        const escalas = this.variavel_coropletico === "lucro_prejuizo"
+            ? [this.cor_negativos, this.cor_positivos]
+            : [this.cor];
+
+        const itens = escalas.flatMap(escala => {
+            const cores = escala.range();
+            return cores.map((cor, indice) => ({
+                cor,
+                rotulo: formatarIntervalo(escala.invertExtent(cor), indice, cores.length)
+            }));
+        });
+        itens.push({ cor: "gray", rotulo: "Sem dados" });
+
+        const tituloSelecionado = this.seletor_coropletico.selectedOptions[0];
+        const titulo = tituloSelecionado ? tituloSelecionado.textContent.trim() : this.variavel_coropletico;
+        const linhaAltura = 20;
+        const largura = 170;
+        const altura = 34 + itens.length * linhaAltura;
+        const legenda = this.svg.selectAll("g.legenda-coropletico")
+            .data([null])
+            .join("g")
+            .attr("class", "legenda-coropletico")
+            .attr("transform", "translate(12,12)")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", 12);
+
+        legenda.selectAll("rect.fundo")
+            .data([null])
+            .join("rect")
+            .attr("class", "fundo")
+            .attr("width", largura)
+            .attr("height", altura)
+            .attr("rx", 4)
+            .attr("fill", "white")
+            .attr("fill-opacity", 0.9)
+            .attr("stroke", "#999");
+
+        legenda.selectAll("text.titulo")
+            .data([titulo])
+            .join("text")
+            .attr("class", "titulo")
+            .attr("x", 8)
+            .attr("y", 18)
+            .attr("font-weight", "bold")
+            .text(d => d);
+
+        const linhas = legenda.selectAll("g.item")
+            .data(itens)
+            .join("g")
+            .attr("class", "item")
+            .attr("transform", (d, i) => `translate(8,${27 + i * linhaAltura})`);
+
+        linhas.selectAll("rect")
+            .data(d => [d])
+            .join("rect")
+            .attr("width", 18)
+            .attr("height", 14)
+            .attr("fill", d => d.cor);
+
+        linhas.selectAll("text")
+            .data(d => [d])
+            .join("text")
+            .attr("x", 25)
+            .attr("y", 11)
+            .text(d => d.rotulo);
 
     }
 }
