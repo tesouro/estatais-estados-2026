@@ -97,6 +97,44 @@ lucro_preju <- bind_rows(
 
 
 
+# coroplético -------------------------------------------------------------
+
+choropleth_summaries <- raw_data %>%
+  mutate(
+    across(
+      c(
+        `Receita Líquida Operacional`,
+        `Despesa com Pessoal, incluindo temporários e terceirizados (por competência)`,
+        `Despesa Total (por competência)`,
+        `Lucro / Prejuízo Líquido do Exercício`,
+        `Patrimônio Líquido`
+        ),
+      ~ as.numeric(str_replace(.x, ",", "."))
+    )
+  ) %>%
+  group_by(UF) %>%
+  summarize(
+    qde = n(),
+    receita = sum(`Receita Líquida Operacional`),
+    desp_pessoal = sum(`Despesa com Pessoal, incluindo temporários e terceirizados (por competência)`) / sum(`Despesa Total (por competência)`),
+    lucro_prejuizo = sum(`Lucro / Prejuízo Líquido do Exercício`),
+    pl = sum(`Patrimônio Líquido`)
+    
+  )
+
+ggplot(choropleth_summaries, aes(qde)) + geom_histogram(bins = 4)
+ggplot(choropleth_summaries, aes(receita)) + geom_histogram(bins = 5)
+ggplot(choropleth_summaries, aes(desp_pessoal)) + geom_histogram(bins = 5)
+ggplot(choropleth_summaries, aes(lucro_prejuizo)) + geom_histogram(bins = 4)
+ggplot(choropleth_summaries, aes(pl)) + geom_histogram(bins = 5)
+
+ggplot(choropleth_summaries, aes(x = reorder(UF, qde), y = qde)) + geom_col()
+ggplot(choropleth_summaries, aes(x = reorder(UF, receita), y = receita)) + geom_col()
+ggplot(choropleth_summaries, aes(x = reorder(UF, desp_pessoal), y = desp_pessoal)) + geom_col()
+ggplot(choropleth_summaries, aes(x = reorder(UF, lucro_prejuizo), y = lucro_prejuizo)) + geom_col()
+
+# output ------------------------------------------------------------------
+
 output <- list(
   mapa = mapa_ufs_simp_digitos,
   dados = data_com_posicoes,
@@ -104,7 +142,8 @@ output <- list(
     setor = ranking_setores,
     uf = ranking_uf
   ),
-  lucro_preju = lucro_preju
+  lucro_preju = lucro_preju,
+  coropletico = choropleth_summaries
 )
 
 jsonlite::write_json(output, "dados.json")
