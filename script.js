@@ -256,6 +256,21 @@ class Mapa {
 
         }
 
+        if (this.variavel_coropletico != "qde") {
+
+            valores_legenda = valores_legenda.map(d =>
+                this.variavel_coropletico == "desp_pessoal" ? 
+                (100 * d).toLocaleString('pt-BR', {maximumFractionDigits: 0}) + "%" : 
+                formata_para_legenda(d)
+            );
+
+        } else {
+
+            valores_legenda = valores_legenda.map(d => Math.round(d,0))
+
+        }
+        
+
         console.log(valores_legenda, cores_legenda);
 
         cores_legenda.forEach( (cor,i) => {
@@ -834,3 +849,32 @@ function popula_informacoes_empresa(dados_empresa) {
 }
 
 
+function formata_para_legenda(valor) {
+    const unidades = [
+        { valor: 1e12, sufixo: "tri" },
+        { valor: 1e9,  sufixo: "bi" },
+        { valor: 1e6,  sufixo: "mi" },
+        { valor: 1e3,  sufixo: "mil" }
+    ];
+
+    const valor_abs = Math.abs(valor);
+    const unidade = unidades.find(u => valor_abs >= u.valor);
+
+    if (!unidade) {
+        return `R$ ${valor.toLocaleString("pt-BR", {
+            maximumFractionDigits: 0
+        })}`;
+    }
+
+    const numero = valor / unidade.valor;
+
+    const formatado = numero.toLocaleString("pt-BR", {
+        maximumSignificantDigits: 3
+    });
+
+    //const sufixo = Math.abs(numero) === 1 ? unidade.singular : unidade.plural;
+
+    const sufixo = unidade.sufixo;
+
+    return `R$ ${formatado} ${sufixo}`;
+}

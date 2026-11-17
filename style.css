@@ -100,7 +100,7 @@ p.selecao-coropletico {
     bottom: 0;
     left: 0;
     position: absolute;
-    width: 400px;
+    width: 50%;
     align-items: flex-start;
     gap: 0;
 }
