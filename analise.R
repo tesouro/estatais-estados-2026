@@ -5,7 +5,16 @@ library(geobr)
 library(rmapshaper)
 library(geojsonsf)
 
-raw_data <- readxl::read_excel("quadro_estatais_2026.xlsx", sheet = "Dados 2025") %>% filter(!is.na(UF))
+raw_data_pre <- readxl::read_excel("quadro_estatais_2026.xlsx", sheet = "Dados 2025") 
+
+raw_data_pre2 <- raw_data_pre %>% filter(!is.na(UF)) %>%
+  distinct()
+
+duplicados_nomes <- raw_data_pre2 %>% count(Estatal) %>% filter(n > 1) %>% pull(Estatal)
+
+registros_duplicados <- raw_data_pre2 %>% filter(Estatal %in% duplicados_nomes)
+
+# quantidades por uf, setor e dep -----------------------------------------
 
 ranking_uf <- raw_data %>%
   count(UF) %>%
@@ -17,19 +26,53 @@ ranking_setores <- raw_data %>%
   arrange(desc(n)) %>%
   rename(n_setor = n)
 
-data_com_posicoes <- raw_data %>%
+data_com_posicoes_dep <- raw_data %>%
   left_join(ranking_uf) %>%
   left_join(ranking_setores) %>%
   arrange(desc(n_uf), Dependência) %>%
   group_by(UF) %>%
-  mutate(pos_uf = row_number()) %>%
+  mutate(pos_uf_dep = row_number()) %>%
   ungroup() %>%
   arrange(desc(n_setor), Dependência) %>%
   group_by(Setor) %>%
-  mutate(pos_setor = row_number())
+  mutate(pos_setor_dep = row_number())
 
-ggplot(data_com_posicoes) + geom_rect(aes(y = UF, x = pos_uf, fill = Dependência), width = 0.8, height = 0.8)
-ggplot(data_com_posicoes) + geom_rect(aes(y = Setor, x = pos_setor, fill = Dependência), width = 0.8, height = 0.8)
+ggplot(data_com_posicoes) + geom_rect(aes(y = UF, x = pos_uf_dep, fill = Dependência), width = 0.8, height = 0.8)
+ggplot(data_com_posicoes) + geom_rect(aes(y = Setor, x = pos_setor_dep, fill = Dependência), width = 0.8, height = 0.8)
+
+
+
+# quantidades por uf, setor e pgto Plr ------------------------------------
+
+data_com_posicoes_plr <- raw_data %>%
+  left_join(ranking_uf) %>%
+  left_join(ranking_setores) %>%
+  rename(PLR = `Foi Distribuído PLR ou RVA no exercício`) %>%
+  arrange(desc(n_uf), PLR) %>%
+  group_by(UF) %>%
+  mutate(pos_uf_plr = row_number()) %>%
+  ungroup() %>%
+  arrange(desc(n_setor), PLR) %>%
+  group_by(Setor) %>%
+  mutate(pos_setor_plr = row_number())
+
+ggplot(data_com_posicoes_plr) + geom_rect(aes(y = UF, x = pos_uf_plr, fill = PLR), width = 0.8, height = 0.8)
+ggplot(data_com_posicoes_plr) + geom_rect(aes(y = Setor, x = pos_setor_plr, fill = PLR), width = 0.8, height = 0.8)
+
+
+
+# quantidades com posicoes, plr e dep -------------------------------------
+
+data_com_posicoes_plr_sintese <- data_com_posicoes_plr %>%
+  ungroup() %>%
+  select(Estatal, pos_uf_plr, pos_setor_plr)
+
+data_com_posicoes <- data_com_posicoes_dep %>%
+  left_join(data_com_posicoes_plr_sintese)
+
+data_com_posicoes %>% count(Estatal) %>% filter(n > 1)
+
+# mapa --------------------------------------------------------------------
 
 mapa_ufs <- geobr::read_state(year = 2025)
 
