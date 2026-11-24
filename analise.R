@@ -72,6 +72,7 @@ data_com_posicoes <- data_com_posicoes_dep %>%
 
 data_com_posicoes %>% count(Estatal) %>% filter(n > 1)
 
+
 # mapa --------------------------------------------------------------------
 
 mapa_ufs <- geobr::read_state(year = 2025)
