@@ -178,6 +178,20 @@ ggplot(choropleth_summaries, aes(x = reorder(UF, desp_pessoal), y = desp_pessoal
 ggplot(choropleth_summaries, aes(x = reorder(UF, lucro_prejuizo), y = lucro_prejuizo)) + geom_col()
 ggplot(choropleth_summaries, aes(x = reorder(UF, pl), y = pl)) + geom_col()
 
+
+# lucro prejuizo por setor ------------------------------------------------
+
+lucro_preju_setor <- raw_data_pre2 %>%
+  group_by(Setor) %>%
+  summarize(lucro_preju = sum(
+    as.numeric(
+      str_replace(`Lucro / Prejuízo Líquido do Exercício`, ",", ".")),
+    na.rm = T)
+  ) %>%
+  arrange(desc(lucro_preju))
+
+ggplot(lucro_preju_setor) + geom_col(aes(y = reorder(Setor, lucro_preju), x = lucro_preju, fill = lucro_preju > 0))  
+
 # output ------------------------------------------------------------------
 
 output <- list(
@@ -188,7 +202,8 @@ output <- list(
     uf = ranking_uf
   ),
   lucro_preju = lucro_preju,
-  coropletico = choropleth_summaries
+  coropletico = choropleth_summaries,
+  lucro_preju_setor = lucro_preju_setor
 )
 
 jsonlite::write_json(output, "dados.json")
