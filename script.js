@@ -101,6 +101,8 @@ class Mapa {
         this.svg.selectAll("path.uf").classed("ativo", false);
         d3.select(event.target).classed("ativo", true);
 
+        sumario_estado.scrollIntoView({ behavior: "smooth", block: "start"});
+
         this.preenche_box_estado(d.properties.abbrev_state, d.properties.name_state);
 
     }
