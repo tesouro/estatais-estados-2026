@@ -3,7 +3,7 @@ const container_mapa = document.querySelector(".container-mapa");
 //const mapa = d3.select(".mapa");
 
 let mapa;
-let grafico_barras, grafico_qde_lucro_prej;
+let grafico_barras, grafico_qde_lucro_prej, grafico_lucro_prej_setor;
 let dados;
 
 fetch("dados.json").then(response => response.json()).then(data => {
@@ -31,6 +31,8 @@ fetch("dados.json").then(response => response.json()).then(data => {
     grafico_barras = new GraficoBarras("grafico-barras", dados, data.categorias);
 
     grafico_qde_lucro_prej = new GraficoQdeLucroPrejuizo("grafico-conta-lucro-preju", lucro_preju, grafico_barras.setores, grafico_barras.ufs);
+
+    grafico_lucro_prej_setor = new GraficoLucroPrejuizoSetor("grafico-lucro-preju-setor", data.lucro_preju_setor);
 
     controle_aba.dataset.abaVisivel = "mapa";
 
@@ -767,6 +769,119 @@ class GraficoQdeLucroPrejuizo {
         })
 
     }
+
+}
+
+class GraficoLucroPrejuizoSetor {
+
+    constructor(ref, dados) {
+
+        this.dados = dados;
+
+        this.svg = d3.select("." + ref);
+        this.container = d3.select(".container-" + ref);
+
+        this.w = +this.svg.style("width").slice(0,-2);
+        this.h = +this.svg.style("height").slice(0,-2);
+
+        this.margin_w = 45;
+        this.margin_h = 10;
+
+        this.svg.attr("viewBox", `0 0 ${this.w} ${this.h}`);
+        this.svg.attr("width", this.w);
+        this.svg.attr("height", this.h);  
+
+        this.monta_escalas();
+        this.desenha();
+
+    }    
+
+    monta_escalas() {
+
+        const limites_valores = d3.extent(this.dados, d => d.lucro_preju);
+        console.log(limites_valores);
+
+        this.x = d3.scaleLinear()
+            .domain(
+                limites_valores                
+            )
+            .range(
+                [this.margin_w, this.w - this.margin_w]
+            )
+        ;
+
+        const max_valor_abs = d3.max([limites_valores[1], Math.abs(limites_valores[0])]);
+
+        const w_max = this.x(max_valor_abs) - this.x(0);
+
+        this.w = d3.scaleLinear()
+            .domain(
+                [0, max_valor_abs]
+            )
+            .range(
+                [0, w_max]
+            )
+        ;
+                
+
+        this.y = d3.scaleBand()
+            .domain(
+                this.dados.map(d => d.Setor)
+            )
+            .range(
+                [this.margin_h, this.h - this.margin_h]
+            )
+            .padding(1)
+        ;
+
+        this.altura_barra = Math.floor(this.y.bandwidth());
+    }
+
+    desenha() {
+
+        const height = 15;
+
+        this.chart = this.svg.selectAll("rect.barras-lucro-preju-setor")
+            .data(this.dados)
+            .join("rect")
+            .classed("barras-lucro-preju-setor", true)
+            .classed("preju", d => d.lucro_preju < 0)
+            .classed("lucro", d => d.lucro_preju > 0)
+            .attr("x", this.x(0))
+            .attr("y", d => this.y(d.Setor))
+            .attr("width", d => this.w(Math.abs(d.lucro_preju)))
+            .attr("height", height)
+            .attr("transform", d => `translate(${d.lucro_preju > 0 ? 0 : -this.w(Math.abs(d.lucro_preju))})`)
+        ;
+
+        // rotulos
+        this.container.selectAll("span.rotulo")
+            .data(this.dados)
+            .join("span")
+            .classed("rotulo", true)
+            .classed("preju", d => d.lucro_preju < 0)
+            .classed("lucro", d => d.lucro_preju > 0)
+            .style("left", d => (this.x(0) + this.w(d.lucro_preju)) + "px" )
+            .style("top", d => this.y(d.Setor) + "px")
+            .text(d => formata_para_legenda(d.lucro_preju))
+        ;        
+        
+        // legenda
+        this.container.selectAll("span.rotulos-eixo")
+            .data(this.dados)
+            .join("span")
+            .classed("rotulo-eixo", true)
+            .classed("preju", d => d.lucro_preju < 0)
+            .classed("lucro", d => d.lucro_preju > 0)
+            .style("left", d => this.x(0) + "px" )
+            .style("top", d => this.y(d.Setor) + "px")
+            .style("line-height", height + "px")
+            .text(d => d.Setor)
+        ;    
+
+
+    }
+
 
 }
 

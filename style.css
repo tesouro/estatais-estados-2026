@@ -183,19 +183,22 @@ select.seletor-grafico {
     position: relative;
 }
 
-.container-grafico-barras span.rotulo {
+.container-grafico span.rotulo {
     position: absolute;
-    transform: translateY(-100%);
     font-size: .7em;
+}
+
+.container-grafico-barras span.rotulo {
+    transform: translateY(-100%);    
 }
 
 /* grafico qde empresas lucro / preju */
 
-.grafico-conta-lucro-preju rect.preju {
+rect.preju {
     fill: firebrick;
 }
 
-.grafico-conta-lucro-preju rect.lucro {
+rect.lucro {
     fill: dodgerblue;
 }
 
@@ -265,7 +268,31 @@ p.texto-legendas-x {
     display: none;
 }
 
+/* Gráfico Lucro Preju Setor */
 
+.container-grafico-lucro-preju-setor {
+    height: 600px;
+}
+
+.container-grafico-lucro-preju-setor .rotulo {
+    padding: 0 .5em;
+    width: max-content;
+}
+
+.container-grafico-lucro-preju-setor .rotulo.preju,
+.container-grafico-lucro-preju-setor .rotulo-eixo.lucro {
+    transform: translate(-100%);
+}
+
+.container-grafico-lucro-preju-setor .rotulo.lucro { color: steelblue; }
+.container-grafico-lucro-preju-setor .rotulo.preju { color: firebrick; }
+
+
+.container-grafico span.rotulo-eixo {
+    position: absolute;
+    font-size: .7em;
+    padding: 0 .5em;
+}
 
 /*BOX LISTA EMPRESAS */
 
