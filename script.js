@@ -385,14 +385,25 @@ class Mapa {
 
 class GraficoBarras {
 
+    cor_ndep = "#718c35";
+    cor_dep = "#f2ac29"
+
+    cor_plr_sim = "#29A5F2";
+    cor_plr_nao = "#9D4F9D";
+
     constructor(ref, dados, categorias) {
 
         this.dados = dados;
         this.svg = d3.select("." + ref);
         this.container = d3.select(".container-" + ref);
 
-        this.categorias = categorias
+        this.seletor_setor_uf = document.querySelector('select[name="seletor-modo-grafico-barra-setor-uf"]');
+        this.seletor_dep_plr = document.querySelector('select[name="seletor-modo-grafico-barra-dep-plr"]');
 
+        this.modo_grafico_setor_uf = "setor";
+        this.modo_grafico_dep_plr = "dep";
+
+        this.categorias = categorias;
 
         this.w = +this.svg.style("width").slice(0,-2);
         this.h = +this.svg.style("height").slice(0,-2);
@@ -410,6 +421,8 @@ class GraficoBarras {
         this.renderiza_grafico();
 
         this.mostra_rotulos("setor");
+
+        this.monitora_seletores();
 
     }
 
@@ -455,35 +468,61 @@ class GraficoBarras {
         ;
 
         this.altura_barra = Math.floor(this.y_uf.bandwidth());
+
+        this.cor = {
+            dep : {
+                "DEPENDENTE" : this.cor_dep,
+                "NÃO DEPENDENTE" : this.cor_ndep
+            },
+
+            plr : {
+                "SIM" : this.cor_plr_sim,
+                "NÃO" : this.cor_plr_nao
+            }
+        }
         
         
     }
 
     renderiza_grafico() {
 
+        const var_y = this.modo_grafico_setor_uf == "setor" ? "Setor" : "UF"; 
+        // só porque as bixigas dos nomes dos campos estão diferentes
+        // um tá setor/uf, outro Setor/UF
+
+        const nome_var_cor = this.modo_grafico_dep_plr == "dep" ? "Dependência" : "Foi Distribuído PLR ou RVA no exercício";
+
         this.chart = this.svg.selectAll("rect.empresas")
             .data(this.dados)
             .join("rect")
             .classed("empresas", true)
-            .attr("data-tipo-dep", d => d["Dependência"])
+            //.attr("data-tipo-dep", d => d["Dependência"])
+            .attr("fill", d => this.cor[this.modo_grafico_dep_plr][d[nome_var_cor]])
+            .attr("stroke", d => this.cor[this.modo_grafico_dep_plr][d[nome_var_cor]])
             .attr("width", this.largura_bloquinho)
             .attr("height", this.altura_barra)
-            .attr("x", d => this.x(d.pos_setor))
-            .attr("y", d => this.y_setor(d.Setor))
+            .attr("x", d => this.x(d[`pos_${this.modo_grafico_setor_uf}_${this.modo_grafico_dep_plr}`]))
+            .attr("y", d => this.y_setor(d[var_y]))
         ;
 
     }
 
-    atualiza_grafico(modo){
+    atualiza_grafico(){
 
-        const variavel = modo == "setor" ? "Setor" : "UF";
+        const var_y = this.modo_grafico_setor_uf == "setor" ? "Setor" : "UF"; 
+        const nome_var_cor = this.modo_grafico_dep_plr == "dep" ? "Dependência" : "Foi Distribuído PLR ou RVA no exercício";
 
         this.chart
             .transition()
-            .duration(1000)
+            .duration(500)
             .delay((d,i) => i * 1)
-            .attr("x", d => this.x(d["pos_" + modo]))
-            .attr("y", d => this["y_"+modo](d[variavel]))
+            .attr("fill", d => this.cor[this.modo_grafico_dep_plr][d[nome_var_cor]])
+            .attr("stroke", d => this.cor[this.modo_grafico_dep_plr][d[nome_var_cor]])
+            .transition()
+            .delay((d,i) => i * 1 + 250)
+            .duration(1000)
+            .attr("x", d => this.x(d[`pos_${this.modo_grafico_setor_uf}_${this.modo_grafico_dep_plr}`]))
+            .attr("y", d => this["y_" + this.modo_grafico_setor_uf](d[var_y]))
         ;
 
     }
@@ -503,9 +542,32 @@ class GraficoBarras {
             .style("opacity", 0)
             .transition()
             .duration(1000)
-            .delay( (d,i) => i * 50)
+            .delay( (d,i) => i * 50 + 1000)
             .style("opacity", 1)
         ;
+    }
+
+    monitora_seletores() {
+
+        this.seletor_setor_uf.addEventListener("change", e => {
+
+            const modo = e.target.value;
+            this.modo_grafico_setor_uf = modo;
+
+            grafico_barras.atualiza_grafico();
+            grafico_barras.mostra_rotulos(modo);
+
+        });
+
+        this.seletor_dep_plr.addEventListener("change", e => {
+
+            this.modo_grafico_dep_plr = e.target.value;
+
+            grafico_barras.atualiza_grafico();
+
+        });        
+
+
     }
 
 }
@@ -713,7 +775,6 @@ class GraficoQdeLucroPrejuizo {
 const body = document.querySelector("body");
 const controle_aba = document.querySelector("[data-aba-visivel]");
 const barra_controle = document.querySelector(".barra-controle");
-const seletor_grafico_barras = document.querySelector('.titulo-grafico-barras select');
 const box_setores = document.querySelector(".box-setores");
 
 function reseta_botoes() {
@@ -760,15 +821,6 @@ barra_controle.addEventListener("click", e => {
     }
 
 });
-
-seletor_grafico_barras.addEventListener("change", e => {
-
-    const modo = e.target.value;
-
-    grafico_barras.atualiza_grafico(modo);
-    grafico_barras.mostra_rotulos(modo);
-
-})
 
 box_setores.addEventListener("click", e => {
 
