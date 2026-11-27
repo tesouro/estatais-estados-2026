@@ -146,6 +146,7 @@ p.selecao-coropletico {
     stroke: #555;
     fill: transparent;
     stroke-width: 2;
+    transition: fill .3s;
 }
 
 path.uf:hover, path.uf.ativo {
