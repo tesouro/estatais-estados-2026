@@ -192,6 +192,34 @@ lucro_preju_setor <- raw_data_pre2 %>%
 
 ggplot(lucro_preju_setor) + geom_col(aes(y = reorder(Setor, lucro_preju), x = lucro_preju, fill = lucro_preju > 0))  
 
+
+# waterfall - resultado ---------------------------------------------------
+
+dados_waterfall <- raw_data_pre2 %>%
+  select(
+    dep = Dependência,
+    dividendos = `Dividendos e Juros sobre Capital Próprio pagos ao Tesouro Estadual / Municipal (pago)`,
+    subvencao = `Subvenções - Exercício`,
+    reforco = `Reforço de Capital - Exercício`,
+  ) %>%
+  mutate(
+    across(
+      dividendos:reforco,
+      ~ as.numeric(str_replace(.x, ",", "."))
+    )
+  ) %>%
+  group_by(dep) %>%
+  summarize(
+    across(
+      dividendos:reforco,
+      ~ sum(.x)
+    )
+  ) %>%
+  ungroup() %>%
+  mutate(resultado = dividendos - subvencao - reforco)
+  
+  
+
 # output ------------------------------------------------------------------
 
 output <- list(
@@ -203,7 +231,8 @@ output <- list(
   ),
   lucro_preju = lucro_preju,
   coropletico = choropleth_summaries,
-  lucro_preju_setor = lucro_preju_setor
+  lucro_preju_setor = lucro_preju_setor,
+  resultado = dados_waterfall
 )
 
 jsonlite::write_json(output, "dados.json")
